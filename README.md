@@ -1,5 +1,5 @@
 # 明源小管家-物品领用-管理后台
-> 明源企业号-明源小管家-物品领用管理后台
+> 明源企业号-明源小管家-物品领用-管理后台
 
 ## UI 框架说明
 - 基于[vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)项目搭建
@@ -9,9 +9,10 @@
     # 安装依赖
     npm install
 
-    # 建议不要用cnpm  安装有各种诡异的bug 可以通过如下操作解决npm速度慢的问题
     npm install --registry=https://registry.npm.taobao.org
-
+    
+    # node-sass 报错的，请用 cnpm 安装 node-sass
+ 
     # 本地开发 开启服务
     npm run dev
 ```
