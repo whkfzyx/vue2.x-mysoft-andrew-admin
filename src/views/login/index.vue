@@ -162,7 +162,6 @@
 
         .title {
             font-size: 26px;
-            font-weight: 400;
             color: #eeeeee;
             margin: 0px auto 40px auto;
             text-align: center;
