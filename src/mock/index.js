@@ -3,8 +3,12 @@ import MockAdapter from 'axios-mock-adapter';
 import loginAPI from './login';
 import articleAPI from './article';
 import article_tableAPI from './article_table';
+import goodsList from './goodsManagement';
 import remoteSearchAPI from './remoteSearch';
 const mock = new MockAdapter(axios);
+
+// 物品管理
+mock.onGet('/getGoodsList').reply(goodsList.getList);
 
 // 登录相关
 mock.onPost('/login/loginbyemail').reply(loginAPI.loginByEmail);
