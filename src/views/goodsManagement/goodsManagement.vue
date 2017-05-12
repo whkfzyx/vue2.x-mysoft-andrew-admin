@@ -6,6 +6,7 @@
             </el-button>
         </div>
 
+        <!--table-->
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row
                   style="width: 100%">
             <el-table-column align="center" label="" style="width:6%;">
@@ -34,48 +35,79 @@
             </el-table-column>
         </el-table>
 
+        <!--pagination-->
         <div v-show="!listLoading" class="pagination-container" style="text-align: right;">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                           :current-page="listQuery.page" :page-sizes="[10,20,30, 50]"
-                           :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+                           :current-page="listQuery.page" :page-sizes="[10,20,30,50]"
+                           :page-size="listQuery.pageSize" layout="total, sizes, prev, pager, next, jumper"
+                           :total="total">
             </el-pagination>
         </div>
 
+        <!--modal - insert-->
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" label-position="left" label-width="70px"
-                     style='width: 400px; margin-left:50px;'>
-                <el-form-item label="类型">
-                    <el-select class="filter-item" v-model="temp.type" placeholder="请选择">
-                        <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name"
+                     style='width: 80%;margin:0 auto;'>
+                <el-form-item label="物品名称">
+                    <el-input v-model="temp.name"></el-input>
+                </el-form-item>
+
+                <el-form-item label="上传图片">
+                    <el-upload
+                            action="https://jsonplaceholder.typicode.com/posts/"
+                            :multiple="false"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :file-list="fileList">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item label="隶属部门">
+                    <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
+                        <el-option v-for="item in departmentOptions" :key="item.key" :label="item.display_name"
                                    :value="item.key">
                         </el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="状态">
-                    <el-select class="filter-item" v-model="temp.status" placeholder="请选择">
-                        <el-option v-for="item in  statusOptions" :key="item" :label="item" :value="item">
-                        </el-option>
-                    </el-select>
+                <el-form-item label="物品性质">
+                    <el-radio-group v-model="temp.type">
+                        <el-radio v-for="item in typeOptions" :key="item.key" :label="item.key">
+                            {{item.display_name}}
+                        </el-radio>
+                    </el-radio-group>
                 </el-form-item>
 
-                <el-form-item label="时间">
-                    <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="选择日期时间">
-                    </el-date-picker>
-                </el-form-item>
+                <el-row v-if="temp.type=='lowValue'">
+                    <el-col :span="10">
+                        <el-form-item label="领用频率">
+                            <el-input v-model.number="temp.frequency"
+                                      style="display: inline-block; width: 70%;"></el-input>
+                            <span>/人·月</span>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10" :offset="4">
+                        <el-form-item label="库存">
+                            <el-input v-model.number="temp.stock">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-else>
+                    <el-col :span="10">
+                        <el-form-item label="可借时长">
+                            <el-input v-model.number="temp.duration"
+                                      style="display: inline-block; width: 70%;"></el-input>
+                            <span>天</span>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
 
-                <el-form-item label="标题">
-                    <el-input v-model="temp.title"></el-input>
-                </el-form-item>
-
-                <el-form-item label="重要性">
-                    <el-rate style="margin-top:8px;" v-model="temp.importance"
-                             :colors="['#99A9BF', '#F7BA2A', '#FF9900']"></el-rate>
-                </el-form-item>
-
-                <el-form-item label="点评">
+                <el-form-item label="描述">
                     <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容"
-                              v-model="temp.remark">
+                              v-model="temp.description">
                     </el-input>
                 </el-form-item>
             </el-form>
@@ -85,17 +117,6 @@
                 <el-button v-else type="primary" @click="update">确 定</el-button>
             </div>
         </el-dialog>
-
-        <el-dialog title="阅读数统计" v-model="dialogPvVisible" size="small">
-            <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-                <el-table-column prop="key" label="渠道"></el-table-column>
-                <el-table-column prop="pv" label="pv"></el-table-column>
-            </el-table>
-            <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">确 定</el-button>
-      </span>
-        </el-dialog>
-
     </div>
 </template>
 
@@ -103,18 +124,19 @@
     import {fetchList} from 'api/goodsManagement';
     import {parseTime, objectMerge} from 'utils';
 
-    const calendarTypeOptions = [
-        {key: 'FD', display_name: '经济数据'},
-        {key: 'FE', display_name: '财经大事'},
-        {key: 'BI', display_name: '国债发行'},
-        {key: 'VN', display_name: '假期报告'}
+    const typeOptions = [
+        {key: 'lowValue', display_name: '低值易耗'},
+        {key: 'fixedAsset', display_name: '固定资产'},
     ];
-
-    // arr to obj
-    const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-        acc[cur.key] = cur.display_name;
-        return acc
-    }, {});
+    const departmentOptions = [
+        {key: 'administration', display_name: '行政'},
+        {key: 'it', display_name: 'IT'},
+        {key: 'finance', display_name: '财务'},
+    ];
+    const durationTypeOptions = [
+        {key: 'longTerm', display_name: '长期'},
+        {key: 'duration', display_name: '时间段'},
+    ];
 
     export default {
         name: 'goodsManagement',
@@ -126,33 +148,29 @@
                 listQuery: {
                     page: 1,
                     pageSize: 20,
-                    importance: undefined,
                     title: undefined,
                     type: undefined,
-                    sort: '+id'
                 },
                 temp: {
                     id: undefined,
-                    importance: 0,
-                    remark: '',
-                    timestamp: 0,
-                    title: '',
+                    description: '',
+                    department: '',
+                    frequency: 0,
+                    duration: 0,
+                    stock: 0,
+                    name: '',
                     type: '',
                     status: 'published'
                 },
-                importanceOptions: [1, 2, 3],
-                calendarTypeOptions,
-                sortOptions: [{label: '按ID升序列', key: '+id'}, {label: '按ID降序', key: '-id'}],
-                statusOptions: ['published', 'draft', 'deleted'],
+                typeOptions,
+                departmentOptions,
+                durationTypeOptions,
                 dialogFormVisible: false,
                 dialogStatus: '',
                 textMap: {
                     update: '编辑',
                     create: '创建'
                 },
-                dialogPvVisible: false,
-                pvData: [],
-                showAuditor: false,
                 tableKey: 0
             }
         },
@@ -182,7 +200,7 @@
                 })
             },
             handleSizeChange(val) {
-                this.listQuery.limit = val;
+                this.listQuery.pageSize = val;
                 this.getList();
             },
             handleCurrentChange(val) {

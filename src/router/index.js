@@ -133,7 +133,7 @@ export default new Router({
                 {path: 'index', component: AccountManagement, name: '帐户管理'}
             ],
         },
-       /* {
+       {
             path: '/introduction',
             component: Layout,
             redirect: '/introduction/index',
@@ -238,7 +238,7 @@ export default new Router({
                 {path: 'form1', component: Form1, name: '综合form1'}
                 // { path: 'form2', component: Form2, name: '综合form2' }
             ]
-        },*/
+        },
         // {
         //   path: '/admin',
         //   component: Layout,
