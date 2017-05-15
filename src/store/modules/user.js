@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 const user = {
     state: {
-        email: '',
+        email: Cookies.get('email') || '',
         uid: undefined,
         token: Cookies.get('X-Ivanka-Token'),
         roles: [],
@@ -18,6 +18,7 @@ const user = {
         },
         SET_EMAIL: (state, email) => {
             state.email = email;
+            Cookies.set('email', email);
         },
         SET_ROLES: (state, roles) => {
             state.roles = roles;
