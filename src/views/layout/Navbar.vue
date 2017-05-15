@@ -4,7 +4,7 @@
         <levelbar></levelbar>
         <el-dropdown class="avatar-container" trigger="click">
             <div class="avatar-wrapper">
-                {{name}}
+                {{email}}
                 <i class="el-icon-caret-bottom"/>
             </div>
             <el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -35,13 +35,12 @@
             Hamburger,
         },
         data() {
-            return {
-            }
+            return {}
         },
         computed: {
             ...mapGetters([
                 'sidebar',
-                'name',
+                'email',
             ])
         },
         methods: {

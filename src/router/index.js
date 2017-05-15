@@ -50,7 +50,7 @@ export default new Router({
             path: '/goodsManagement',
             component: Layout,
             redirect: '/goodsManagement/index',
-            icon: 'zujian',
+            icon: 'xinrenzhinan',
             noDropdown: true,
             children: [
                 {path: 'index', component: GoodsManagement, name: '物品管理'}
@@ -60,7 +60,7 @@ export default new Router({
             path: '/returnManagement',
             component: Layout,
             redirect: '/returnManagement/index',
-            icon: 'EXCEL',
+            icon: 'xinrenzhinan',
             noDropdown: true,
             children: [
                 {path: 'index', component: ReturnManagement, name: '归还管理'}
@@ -70,7 +70,7 @@ export default new Router({
             path: '/statistic',
             component: Layout,
             redirect: '/statistic/index',
-            icon: 'tubiaoleixingzhengchang',
+            icon: 'xinrenzhinan',
             noDropdown: true,
             children: [
                 {path: 'index', component: Statistic, name: '统计'}
@@ -80,7 +80,7 @@ export default new Router({
             path: '/accountManagement',
             component: Layout,
             redirect: '/accountManagement/index',
-            icon: 'quanxian',
+            icon: 'xinrenzhinan',
             noDropdown: true,
             children: [
                 {path: 'index', component: AccountManagement, name: '帐户管理'}

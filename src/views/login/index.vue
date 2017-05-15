@@ -21,7 +21,7 @@
             </el-form-item>
             <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
             <div class='tips'>editor账号:editor@wallstreetcn.com 密码随便填</div>
-            <div class='tips'>若忘记密码，请其他管理员登录后帮助修改你的密码</div>
+            <div class='tips'>若忘记密码，请其他管理员登录后帮你重置</div>
         </el-form>
     </div>
 </template>
@@ -36,7 +36,7 @@
         data() {
             const validateEmail = (rule, value, callback) => {
                 if (!isWscnEmail(value)) {
-                    callback(new Error('请输入正确的合法邮箱'));
+                    callback(new Error('请输入合法邮箱'));
                 } else {
                     callback();
                 }
@@ -62,7 +62,6 @@
                     ]
                 },
                 loading: false,
-                showDialog: false
             }
         },
         computed: {
@@ -78,7 +77,6 @@
                         this.$store.dispatch('LoginByEmail', this.loginForm).then(() => {
                             this.loading = false;
                             this.$router.push({path: '/'});
-                            // this.showDialog = true;
                         }).catch(err => {
                             this.$message.error(err);
                             this.loading = false;
@@ -89,24 +87,6 @@
                     }
                 });
             },
-            afterQRScan() {
-                // const hash = window.location.hash.slice(1);
-                // const hashObj = getQueryObject(hash);
-                // const originUrl = window.location.origin;
-                // history.replaceState({}, '', originUrl);
-                // const codeMap = {
-                //   wechat: 'code',
-                //   tencent: 'code'
-                // };
-                // const codeName = hashObj[codeMap[this.auth_type]];
-                // if (!codeName) {
-                //   alert('第三方登录失败');
-                // } else {
-                //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-                //     this.$router.push({ path: '/' });
-                //   });
-                // }
-            }
         },
         created() {
             // window.addEventListener('hashchange', this.afterQRScan);
