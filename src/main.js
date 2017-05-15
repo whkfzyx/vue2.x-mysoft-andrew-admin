@@ -13,21 +13,14 @@ import 'styles/index.scss';
 import 'components/Icon-svg/index';
 import 'assets/iconfont/iconfont';
 import * as filters from './filters';
-import Multiselect from 'vue-multiselect';
-import Sticky from 'components/Sticky';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
 import vueWaves from './directive/waves';
-import vueSticky from './directive/sticky';
 import errLog from 'store/errLog';
 import './mock/index.js';  //使用api请求时请将此行注释，不然将被mock拦截
 // import './styles/mixin.scss';
 
 // register globally
-Vue.component('multiselect', Multiselect);
-Vue.component('Sticky', Sticky);
 Vue.use(ElementUI);
 Vue.use(vueWaves);
-Vue.use(vueSticky);
 
 
 // register global utility filters.
