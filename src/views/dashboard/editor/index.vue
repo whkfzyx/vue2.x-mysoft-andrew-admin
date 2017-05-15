@@ -29,7 +29,7 @@
         },
         methods: {
             fetchData() {
-            }
+            },
         },
         filters: {}
     }

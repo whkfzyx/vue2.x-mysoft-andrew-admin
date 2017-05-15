@@ -15,7 +15,6 @@ import * as filters from './filters';
 import vueWaves from './directive/waves';
 import errLog from 'store/errLog';
 import './mock/index.js';  //使用api请求时请将此行注释，不然将被mock拦截
-// import './styles/mixin.scss';
 
 // register globally
 Vue.use(ElementUI);

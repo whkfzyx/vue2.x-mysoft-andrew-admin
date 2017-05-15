@@ -4,7 +4,6 @@
     <el-row>
       <el-col :span="12">
         <h1 class="text-jumbo text-ginormous">Oops!</h1>
-         gif来源<a href='https://zh.airbnb.com/' target='_blank'>airbnb</a> 页面
         <h2>你没有权限去该页面</h2>
         <h6>如有不满请联系你领导</h6>
         <ul class="list-unstyled">
@@ -12,18 +11,12 @@
           <li class="link-type">
             <router-link to="/dashboard">回首页</router-link>
           </li>
-          <li class="link-type"><a href="https://www.taobao.com/">随便看看</a></li>
-          <li><a @click="dialogVisible=true" href="#">点我看图</a></li>
         </ul>
       </el-col>
       <el-col :span="12">
         <img :src="errGif" width="313" height="428" alt="Girl has dropped her ice cream.">
       </el-col>
     </el-row>
-
-    <el-dialog title="随便看" v-model="dialogVisible" size="large">
-      <img class="pan-img" :src="ewizardClap">
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -33,8 +26,6 @@
       data() {
         return {
           errGif: errGif + '?' + +new Date(),
-          ewizardClap: 'https://wpimg.wallstcn.com/007ef517-bafd-4066-aae4-6883632d9646',
-          dialogVisible: false
         }
       },
       methods: {
@@ -52,14 +43,6 @@
         .pan-back-btn {
             background: #008489;
             color: #fff;
-        }
-        .pan-gif {
-            margin: 0 auto;
-            display: block;
-        }
-        .pan-img{
-            display: block;
-            margin: 0 auto;
         }
         .text-jumbo {
             font-size: 60px;

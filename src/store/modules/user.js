@@ -11,7 +11,6 @@ const user = {
         auth_type: '',
         token: Cookies.get('X-Ivanka-Token'),
         name: '',
-        avatar: '',
         introduction: '',
         roles: [],
         setting: {
@@ -46,9 +45,6 @@ const user = {
         },
         SET_NAME: (state, name) => {
             state.name = name;
-        },
-        SET_AVATAR: (state, avatar) => {
-            state.avatar = avatar;
         },
         SET_ROLES: (state, roles) => {
             state.roles = roles;
@@ -86,7 +82,6 @@ const user = {
                     const data = response.data;
                     commit('SET_ROLES', data.role);
                     commit('SET_NAME', data.name);
-                    commit('SET_AVATAR', data.avatar);
                     commit('SET_INTRODUCTION', data.introduction);
                     resolve(response);
                 }).catch(error => {
