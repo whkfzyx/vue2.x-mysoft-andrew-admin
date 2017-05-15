@@ -5,7 +5,7 @@ const user = {
     state: {
         email: '',
         uid: undefined,
-        token: Cookies.get('token'),
+        token: Cookies.get('X-Ivanka-Token'),
         roles: [],
     },
 
@@ -31,6 +31,7 @@ const user = {
             return new Promise((resolve, reject) => {
                 loginByEmail(email, userInfo.password).then(response => {
                     const data = response.data;
+                    Cookies.set('X-Ivanka-Token', response.data.token);
                     commit('SET_TOKEN', data.token);
                     commit('SET_EMAIL', email);
                     resolve();
@@ -59,6 +60,7 @@ const user = {
                 logout(state.token).then(() => {
                     commit('SET_TOKEN', '');
                     commit('SET_ROLES', []);
+                    Cookies.remove('X-Ivanka-Token');
                     resolve();
                 }).catch(error => {
                     reject(error);
@@ -70,6 +72,7 @@ const user = {
         FedLogOut({commit}) {
             return new Promise(resolve => {
                 commit('SET_TOKEN', '');
+                Cookies.remove('X-Ivanka-Token');
                 resolve();
             });
         }
