@@ -25,10 +25,6 @@
                 忘记密码?(或首次登录)
             </router-link>
         </el-form>
-        <el-dialog title="第三方验证" v-model="showDialog">
-            邮箱登录成功,请选择第三方验证
-            <socialSign></socialSign>
-        </el-dialog>
     </div>
 </template>
 
@@ -36,10 +32,8 @@
     import { mapGetters } from 'vuex';
     import { isWscnEmail } from 'utils/validate';
     // import { getQueryObject } from 'utils';
-    import socialSign from './socialsignin';
 
     export default {
-      components: { socialSign },
       name: 'login',
       data() {
         const validateEmail = (rule, value, callback) => {

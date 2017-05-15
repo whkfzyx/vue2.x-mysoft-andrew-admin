@@ -35,5 +35,6 @@ export default {
             }, 100);
         })
     },
-
+    returnFixedAsset: () => {
+    },
 };

@@ -6,7 +6,6 @@ import router from './router';
 import store from './store';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
-import 'assets/custom-theme/index.css'; // https://github.com/PanJiaChen/custom-element-theme
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import 'normalize.css/normalize.css';
@@ -41,7 +40,7 @@ function hasPermission(roles, permissionRoles) {
   return roles.some(role => permissionRoles.indexOf(role) >= 0)
 }
 // register global progress.
-const whiteList = ['/login', '/authredirect', '/reset', '/sendpwd'];// 不重定向白名单
+const whiteList = ['/login', '/authredirect'];// 不重定向白名单
 router.beforeEach((to, from, next) => {
   NProgress.start();
   if (store.getters.token) {
@@ -105,5 +104,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app');
-
-
