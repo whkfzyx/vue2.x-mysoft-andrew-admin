@@ -161,7 +161,7 @@
                     type: undefined,
                 },
                 temp: {
-                    id: undefined,
+                    goodsId: undefined,
                     description: '',
                     department: '',
                     frequency: 0,
@@ -169,7 +169,6 @@
                     stock: 0,
                     name: '',
                     type: '',
-                    status: 'published'
                 },
                 typeOptions,
                 departmentOptions,
@@ -269,13 +268,14 @@
             },
             resetTemp() {
                 this.temp = {
-                    id: undefined,
-                    importance: 0,
-                    remark: '',
-                    timestamp: 0,
-                    title: '',
-                    status: 'published',
-                    type: ''
+                    goodsId: undefined,
+                    description: '',
+                    department: '',
+                    frequency: 0,
+                    duration: 0,
+                    stock: 0,
+                    name: '',
+                    type: '',
                 };
             },
             handleDownload() {

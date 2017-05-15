@@ -45,6 +45,14 @@
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" label-position="left" label-width="70px"
                      style='width: 400px; margin-left:50px;'>
+                <el-form-item label="隶属部门">
+                    <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
+                        <el-option v-for="item in departmentOptions" :key="item.key" :label="item.display_name"
+                                   :value="item.key">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item label="用户名">
                     <el-input v-model="temp.username"></el-input>
                 </el-form-item>
@@ -71,23 +79,11 @@
     import {getAccountList} from 'api/accountManagement';
     import {parseTime, objectMerge} from 'utils';
 
-    const calendarTypeOptions = [
-        {key: 'FD', display_name: '经济数据'},
-        {key: 'FE', display_name: '财经大事'},
-        {key: 'BI', display_name: '国债发行'},
-        {key: 'VN', display_name: '假期报告'}
-    ];
     const departmentOptions = [
         {key: 'administration', display_name: '行政'},
         {key: 'it', display_name: 'IT'},
         {key: 'finance', display_name: '财务'},
     ];
-
-    // arr to obj
-    const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-        acc[cur.key] = cur.display_name;
-        return acc
-    }, {});
 
     export default {
         name: 'accountManagement',
@@ -103,11 +99,12 @@
                     type: undefined,
                 },
                 temp: {
+                    department: '',
                     username: '',
                     password: '',
                     passwordRepeat: '',
                 },
-                calendarTypeOptions,
+                departmentOptions,
                 dialogFormVisible: false,
                 dialogStatus: '',
                 textMap: {
@@ -200,13 +197,10 @@
             },
             resetTemp() {
                 this.temp = {
-                    id: undefined,
-                    importance: 0,
-                    remark: '',
-                    timestamp: 0,
-                    title: '',
-                    status: 'published',
-                    type: ''
+                    department: '',
+                    username: '',
+                    password: '',
+                    passwordRepeat: '',
                 };
             },
             handleDownload() {
