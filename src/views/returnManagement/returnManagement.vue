@@ -26,15 +26,33 @@
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="借用者" style="width:10%;">
+            <el-table-column align="center" label="" style="width:6%;">
                 <template scope="scope">
-                    <span>{{scope.row.borrower}}</span>
+                    <div><img :src="scope.row.img" :alt="scope.row.name" style="width:40px;height:auto;"></div>
                 </template>
             </el-table-column>
 
             <el-table-column align="center" label="物品" style="width:10%;">
                 <template scope="scope">
                     <span>{{scope.row.name}}</span>
+                </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="物品隶属" style="width:10%;">
+                <template scope="scope">
+                    <span>{{scope.row.department | departmentFilter}}</span>
+                </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="借用者" style="width:10%;">
+                <template scope="scope">
+                    <span>{{scope.row.borrower}}</span>
+                </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="员工部门" style="width:10%;">
+                <template scope="scope">
+                    <span></span>
                 </template>
             </el-table-column>
 
@@ -65,6 +83,11 @@
         {key: 'FE', display_name: '财经大事'},
         {key: 'BI', display_name: '国债发行'},
         {key: 'VN', display_name: '假期报告'}
+    ];
+    const departmentOptions = [
+        {key: 'administration', display_name: '行政'},
+        {key: 'finance', display_name: '财务'},
+        {key: 'it', display_name: 'IT'},
     ];
 
     export default {
@@ -97,6 +120,9 @@
         filters: {
             typeFilter(type) {
                 return calendarTypeKeyValue[type]
+            },
+            departmentFilter(key){
+                return departmentOptions.find(item => item.key === key).display_name
             }
         },
         methods: {

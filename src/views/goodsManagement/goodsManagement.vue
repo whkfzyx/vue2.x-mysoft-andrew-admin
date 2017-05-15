@@ -15,8 +15,16 @@
                 </template>
             </el-table-column>
             <el-table-column align="center" label="名称" style="width:10%;" prop="name"></el-table-column>
-            <el-table-column align="center" label="性质" style="width:8%;" prop="type"></el-table-column>
-            <el-table-column align="center" label="隶属部门" style="width:8%;" prop="department"></el-table-column>
+            <el-table-column align="center" label="性质" style="width:8%;">
+                <template scope="scope">
+                    <span>{{scope.row.type | typeFilter}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="隶属部门" style="width:8%;">
+                <template scope="scope">
+                    <span>{{scope.row.department | departmentFilter}}</span>
+                </template>
+            </el-table-column>
             <el-table-column align="center" label="领用频率/时长" style="width:14%;" prop="department">
                 <template scope="scope">
                     <span>{{scope.row.frequency || scope.row.duration}}</span>
@@ -95,7 +103,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row v-else>
+                <el-row v-else-if="temp.type=='fixedAsset'">
                     <el-col :span="10">
                         <el-form-item label="可借时长">
                             <el-input v-model.number="temp.duration"
@@ -127,6 +135,7 @@
     const typeOptions = [
         {key: 'lowValue', display_name: '低值易耗'},
         {key: 'fixedAsset', display_name: '固定资产'},
+        {key: 'loveHouse', display_name: '爱心屋'},
     ];
     const departmentOptions = [
         {key: 'administration', display_name: '行政'},
@@ -178,17 +187,12 @@
             this.getList();
         },
         filters: {
-            statusFilter(status) {
-                const statusMap = {
-                    published: 'success',
-                    draft: 'gray',
-                    deleted: 'danger'
-                };
-                return statusMap[status]
+            typeFilter(key) {
+                return typeOptions.find(item => item.key === key).display_name
             },
-            typeFilter(type) {
-                return calendarTypeKeyValue[type]
-            }
+            departmentFilter(key) {
+                return departmentOptions.find(item => item.key === key).display_name
+            },
         },
         methods: {
             getList() {

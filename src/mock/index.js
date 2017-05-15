@@ -5,6 +5,8 @@ import articleAPI from './article';
 import article_tableAPI from './article_table';
 import goodsManagement from './goodsManagement';
 import returnManagement from './returnManagement';
+import statistics from './statistics';
+import accountManagement from './accountManagement';
 import remoteSearchAPI from './remoteSearch';
 const mock = new MockAdapter(axios);
 
@@ -14,6 +16,12 @@ mock.onGet('/getGoodsList').reply(goodsManagement.getList);
 //归还管理
 mock.onGet('/getShouldReturnList').reply(returnManagement.getShouldReturnList);
 mock.onGet('/returnFixedAsset').reply(returnManagement.returnFixedAsset);
+
+//统计
+mock.onGet('/fetchStatistics').reply(statistics.fetchStatistics);
+
+//管理员帐户管理
+mock.onGet('/getAccountList').reply(accountManagement.getAccountList);
 
 
 // 登录相关
