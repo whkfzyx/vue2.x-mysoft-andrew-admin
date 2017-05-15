@@ -21,111 +21,111 @@
             </el-form-item>
             <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
             <div class='tips'>editor账号:editor@wallstreetcn.com 密码随便填</div>
-            <router-link to="/sendpwd" class="forget-pwd">
-                忘记密码?(或首次登录)
-            </router-link>
+            <div class='tips'>若忘记密码，请其他管理员登录后帮助修改你的密码</div>
         </el-form>
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-    import { isWscnEmail } from 'utils/validate';
+    import {mapGetters} from 'vuex';
+    import {isWscnEmail} from 'utils/validate';
     // import { getQueryObject } from 'utils';
 
     export default {
-      name: 'login',
-      data() {
-        const validateEmail = (rule, value, callback) => {
-          if (!isWscnEmail(value)) {
-            callback(new Error('请输入正确的合法邮箱'));
-          } else {
-            callback();
-          }
-        };
-        const validatePass = (rule, value, callback) => {
-          if (value.length < 6) {
-            callback(new Error('密码不能小于6位'));
-          } else {
-            callback();
-          }
-        };
-        return {
-          loginForm: {
-            email: 'admin@wallstreetcn.com',
-            password: ''
-          },
-          loginRules: {
-            email: [
-                { required: true, trigger: 'blur', validator: validateEmail }
-            ],
-            password: [
-                { required: true, trigger: 'blur', validator: validatePass }
-            ]
-          },
-          loading: false,
-          showDialog: false
-        }
-      },
-      computed: {
-        ...mapGetters([
-          'auth_type'
-        ])
-      },
-      methods: {
-        handleLogin() {
-          this.$refs.loginForm.validate(valid => {
-            if (valid) {
-              this.loading = true;
-              this.$store.dispatch('LoginByEmail', this.loginForm).then(() => {
-                this.loading = false;
-                this.$router.push({ path: '/' });
-                // this.showDialog = true;
-              }).catch(err => {
-                this.$message.error(err);
-                this.loading = false;
-              });
-            } else {
-              console.log('error submit!!');
-              return false;
+        name: 'login',
+        data() {
+            const validateEmail = (rule, value, callback) => {
+                if (!isWscnEmail(value)) {
+                    callback(new Error('请输入正确的合法邮箱'));
+                } else {
+                    callback();
+                }
+            };
+            const validatePass = (rule, value, callback) => {
+                if (value.length < 6) {
+                    callback(new Error('密码不能小于6位'));
+                } else {
+                    callback();
+                }
+            };
+            return {
+                loginForm: {
+                    email: 'admin@wallstreetcn.com',
+                    password: ''
+                },
+                loginRules: {
+                    email: [
+                        {required: true, trigger: 'blur', validator: validateEmail}
+                    ],
+                    password: [
+                        {required: true, trigger: 'blur', validator: validatePass}
+                    ]
+                },
+                loading: false,
+                showDialog: false
             }
-          });
         },
-        afterQRScan() {
-          // const hash = window.location.hash.slice(1);
-          // const hashObj = getQueryObject(hash);
-          // const originUrl = window.location.origin;
-          // history.replaceState({}, '', originUrl);
-          // const codeMap = {
-          //   wechat: 'code',
-          //   tencent: 'code'
-          // };
-          // const codeName = hashObj[codeMap[this.auth_type]];
-          // if (!codeName) {
-          //   alert('第三方登录失败');
-          // } else {
-          //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-          //     this.$router.push({ path: '/' });
-          //   });
-          // }
+        computed: {
+            ...mapGetters([
+                'auth_type'
+            ])
+        },
+        methods: {
+            handleLogin() {
+                this.$refs.loginForm.validate(valid => {
+                    if (valid) {
+                        this.loading = true;
+                        this.$store.dispatch('LoginByEmail', this.loginForm).then(() => {
+                            this.loading = false;
+                            this.$router.push({path: '/'});
+                            // this.showDialog = true;
+                        }).catch(err => {
+                            this.$message.error(err);
+                            this.loading = false;
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            afterQRScan() {
+                // const hash = window.location.hash.slice(1);
+                // const hashObj = getQueryObject(hash);
+                // const originUrl = window.location.origin;
+                // history.replaceState({}, '', originUrl);
+                // const codeMap = {
+                //   wechat: 'code',
+                //   tencent: 'code'
+                // };
+                // const codeName = hashObj[codeMap[this.auth_type]];
+                // if (!codeName) {
+                //   alert('第三方登录失败');
+                // } else {
+                //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+                //     this.$router.push({ path: '/' });
+                //   });
+                // }
+            }
+        },
+        created() {
+            // window.addEventListener('hashchange', this.afterQRScan);
+        },
+        destroyed() {
+            // window.removeEventListener('hashchange', this.afterQRScan);
         }
-      },
-      created() {
-        // window.addEventListener('hashchange', this.afterQRScan);
-      },
-      destroyed() {
-        // window.removeEventListener('hashchange', this.afterQRScan);
-      }
     }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
     @import "src/styles/mixin.scss";
-    .tips{
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 5px;
+
+    .tips {
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 5px;
     }
+
     .login-container {
         @include relative;
         height: 100vh;
@@ -182,5 +182,4 @@
             color: #fff;
         }
     }
-
 </style>

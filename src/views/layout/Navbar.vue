@@ -2,7 +2,6 @@
     <el-menu class="navbar" mode="horizontal">
         <Hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></Hamburger>
         <levelbar></levelbar>
-        <ErrLog v-if="log.length>0" class="errLog-container" :logsList="log"></ErrLog>
         <el-dropdown class="avatar-container" trigger="click">
             <div class="avatar-wrapper">
                 {{name}}
@@ -29,18 +28,14 @@
     import {mapGetters} from 'vuex'
     import Levelbar from './Levelbar';
     import Hamburger from 'components/Hamburger';
-    import ErrLog from 'components/ErrLog';
-    import errLogStore from 'store/errLog';
 
     export default {
         components: {
             Levelbar,
             Hamburger,
-            ErrLog
         },
         data() {
             return {
-                log: errLogStore.state.errLog
             }
         },
         computed: {
@@ -72,11 +67,6 @@
             float: left;
             padding: 0 10px;
         }
-        .errLog-container {
-            display: inline-block;
-            position: absolute;
-            right: 150px;
-        }
         .avatar-container {
             height: 50px;
             display: inline-block;
@@ -86,11 +76,6 @@
                 cursor: pointer;
                 margin-top: 5px;
                 position: relative;
-                .user-avatar {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 10px;
-                }
                 .el-icon-caret-bottom {
                     position: absolute;
                     right: -20px;
