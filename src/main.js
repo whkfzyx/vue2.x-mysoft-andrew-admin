@@ -11,7 +11,6 @@ import 'nprogress/nprogress.css';
 import 'normalize.css/normalize.css';
 import 'styles/index.scss';
 import 'components/Icon-svg/index';
-import 'assets/iconfont/iconfont';
 import * as filters from './filters';
 import vueWaves from './directive/waves';
 import errLog from 'store/errLog';
