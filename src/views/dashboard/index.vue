@@ -34,3 +34,9 @@
         }
     }
 </script>
+
+<style lang="less" scoped>
+    .dashboard-container {
+        text-align: center;
+    }
+</style>
