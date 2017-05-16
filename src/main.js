@@ -13,12 +13,10 @@ import 'styles/index.scss';
 import 'components/Icon-svg/index';
 import 'assets/iconfont/iconfont';
 import * as filters from './filters';
-import vueWaves from './directive/waves';
 import './mock/index.js';  //使用api请求时请将此行注释，不然将被mock拦截
 
 // register globally
 Vue.use(ElementUI);
-Vue.use(vueWaves);
 
 
 // register global utility filters.

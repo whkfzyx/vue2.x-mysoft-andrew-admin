@@ -8,7 +8,7 @@
                     </el-input>
                 </el-col>
                 <el-col :span="2" :offset="1">
-                    <el-button class="filter-item" type="primary" v-waves @click="handleReturn">归还
+                    <el-button class="filter-item" type="primary" @click="handleReturn">归还
                     </el-button>
                 </el-col>
             </el-row>

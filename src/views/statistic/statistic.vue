@@ -22,7 +22,7 @@
                 </el-option>
             </el-select>
 
-            <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">查询</el-button>
+            <el-button class="filter-item" type="primary" icon="search" @click="handleFilter">查询</el-button>
             <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
         </div>
 
