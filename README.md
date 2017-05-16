@@ -4,15 +4,26 @@
 ## UI 框架说明
 - 基于[vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)项目搭建
 
+## Install
+npm源速度慢时，安装推荐步骤：
+1. 安装npm源切换工具nrm到全局
+`$ npm install -g nrm`
+
+2. 切换源到taobao
+`$ nrm use taobao`
+
+3. 安装依赖
+`$ npm i`
+
+4. 对于任然报错的，安装cnpm到全局
+`$ npm install -g cnpm --registry=https://registry.npm.taobao.org`
+
+5. 使用cnpm单独安装任然报错的包，例如Win中常报错的node-sass
+`$ cnpm i node-sass`
+
+
 ## 开发
 ```bash
-    # 安装依赖
-    npm install
-
-    npm install --registry=https://registry.npm.taobao.org
-    
-    # node-sass 报错的，请用 cnpm 安装 node-sass
- 
     # 本地开发 开启服务
     npm run dev
 ```
