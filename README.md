@@ -34,8 +34,13 @@ npm源速度慢时，安装推荐步骤：
     # 发布测试环境 带webpack ananalyzer
     npm run build:sit-preview
 
-    # 构建生成环境
+    # 构建生产环境 - Mac
     npm run build:prod
+    
+    # 构建生产环境 - Windows
+    修改 package.json 文件中，搜索“build:prod”这一行，
+    后面的改成 set NODE_ENV=production&&node build/build.js
+    再运行 npm run build:prod
 ```
 
 ## 目录结构
