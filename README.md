@@ -23,7 +23,7 @@ npm源速度慢时，安装推荐步骤：
 
 
 ## Hack
-1. 本地开发 开启服务 `npm run dev`
+1. 启动本地开发服务 `npm start`
 2. 浏览器访问 [http://localhost:9527](http://localhost:9527)
 
 ## Publish

@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "node build/dev-server.js",
+    "start": "node build/dev-server.js",
     "build:prod": "better-npm-run build:prod",
     "build:sit": "better-npm-run build:sit",
     "build:sit-preview": "NODE_ENV=sit npm_config_preview=true  npm_config_report=true node build/build.js",
