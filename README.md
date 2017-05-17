@@ -28,16 +28,11 @@ npm源速度慢时，安装推荐步骤：
 
 ## Publish
 ```bash
+    # 构建生产环境
+    npm run build:prod
+
     # 发布测试环境 带webpack ananalyzer
     npm run build:sit-preview
-
-    # 构建生产环境 - Mac
-    npm run build:prod
-    
-    # 构建生产环境 - Windows
-    修改 package.json 文件中，搜索“build:prod”这一行，
-    后面的改成 set NODE_ENV=production&&node build/build.js
-    再运行 npm run build:prod
 ```
 
 ## Directory Structure
@@ -69,6 +64,7 @@ npm源速度慢时，安装推荐步骤：
 └── package.json               // package.json
 
 ```
+
 ## 状态管理
 后台只有user和app配置相关状态使用vuex存在全局，其它数据都由每个业务页面自己管理。
 
