@@ -22,11 +22,11 @@ npm源速度慢时，安装推荐步骤：
 `$ cnpm i node-sass`
 
 
-## 开发
+## Hack
 1. 本地开发 开启服务 `npm run dev`
 2. 浏览器访问 [http://localhost:9527](http://localhost:9527)
 
-## 发布
+## Publish
 ```bash
     # 发布测试环境 带webpack ananalyzer
     npm run build:sit-preview
@@ -40,7 +40,7 @@ npm源速度慢时，安装推荐步骤：
     再运行 npm run build:prod
 ```
 
-## 目录结构
+## Directory Structure
 ```shell
 ├── build                      // 构建相关  
 ├── config                     // 配置相关
