@@ -54,33 +54,35 @@
 
         <!--modal - insert-->
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
-            <el-form class="small-space" :model="temp" label-position="left" label-width="70px"
+            <el-form class="small-space" :model="temp" :rules="rules" ref="goodsDetailForm"
+                     label-position="right" label-width="90px"
                      style='width: 80%;margin:0 auto;'>
-                <el-form-item label="物品名称">
+                <el-form-item label="物品名称" prop="name">
                     <el-input v-model="temp.name"></el-input>
                 </el-form-item>
 
-                <el-form-item label="上传图片">
+                <el-form-item label="上传图片" prop="img">
                     <el-upload
                             action="https://jsonplaceholder.typicode.com/posts/"
                             :multiple="false"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :file-list="fileList">
+                            :file-list="fileList"
+                            :before-upload="beforeImgUpload"
+                            :on-success="onImgUploadSuccess"
+                            :on-remove="handleImgRemove">
                         <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500KB</div>
                     </el-upload>
                 </el-form-item>
 
-                <el-form-item label="隶属部门">
+                <el-form-item label="隶属部门" prop="department">
                     <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
-                        <el-option v-for="item in departmentOptions" :key="item.key" :label="item.display_name"
-                                   :value="item.key">
+                        <el-option v-for="item in departmentOptions" :key="item.key"
+                                   :label="item.display_name" :value="item.key">
                         </el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="物品性质">
+                <el-form-item label="物品性质" prop="type">
                     <el-radio-group v-model="temp.type">
                         <el-radio v-for="item in typeOptions" :key="item.key" :label="item.key">
                             {{item.display_name}}
@@ -88,41 +90,43 @@
                     </el-radio-group>
                 </el-form-item>
 
-                <el-row v-if="temp.type=='lowValue'">
-                    <el-col :span="10">
-                        <el-form-item label="领用频率">
-                            <el-input v-model.number="temp.frequency"
-                                      style="display: inline-block; width: 70%;"></el-input>
-                            <span>/人·月</span>
+                <el-row v-if="temp.type==='lowValue'">
+                    <el-col :span="12">
+                        <el-form-item label="领用频率" prop="frequency">
+                            <el-input-number v-model.number="temp.frequency" :min="0" :max="255"
+                                             style="display: inline-block; width: 70%;"></el-input-number>
+                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">/人·月</span>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="10" :offset="4">
-                        <el-form-item label="库存">
-                            <el-input v-model.number="temp.stock">
-                            </el-input>
+                    <el-col :span="10" :offset="2">
+                        <el-form-item label="库存" prop="stock">
+                            <el-input-number v-model.number="temp.stock" :min="0" :max="255"></el-input-number>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row v-else-if="temp.type=='fixedAsset'">
-                    <el-col :span="10">
+                <el-row v-else-if="temp.type==='fixedAsset'">
+                    <el-col :span="12">
                         <el-form-item label="可借时长">
-                            <el-input v-model.number="temp.duration"
-                                      style="display: inline-block; width: 70%;"></el-input>
-                            <span>天</span>
+                            <el-input-number v-model.number="temp.duration" :min="0" :max="255"
+                                             style="display: inline-block; width: 70%;"></el-input-number>
+                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">天</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
 
                 <el-form-item label="描述">
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容"
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}"
+                              placeholder="请输入内容" :maxlength="1000"
                               v-model="temp.description">
                     </el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button v-if="dialogStatus=='create'" type="primary" @click="create">确 定</el-button>
-                <el-button v-else type="primary" @click="update">确 定</el-button>
+                <el-button v-if="dialogStatus=='create'" type="primary"
+                           @click="create('goodsDetailForm')">确 定
+                </el-button>
+                <el-button v-else type="primary" @click="update('goodsDetailForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -169,6 +173,12 @@
                     stock: 0,
                     name: '',
                     type: '',
+                },
+                fileList: [],
+                rules: {
+                    name: [{required: true, message: '请输入物品名称', trigger: 'blur'}],
+                    department: [{required: true, message: '请选择隶属部门', trigger: 'change'}],
+                    type: [{required: true, message: '请选择物品性质', trigger: 'change'}],
                 },
                 typeOptions,
                 departmentOptions,
@@ -237,17 +247,24 @@
                 const index = this.list.indexOf(row);
                 this.list.splice(index, 1);
             },
-            create() {
-                this.temp.id = parseInt(Math.random() * 100) + 1024;
-                this.temp.timestamp = +new Date();
-                this.temp.author = '原创作者';
-                this.list.unshift(this.temp);
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '创建成功',
-                    type: 'success',
-                    duration: 2000
+            create(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.temp.id = parseInt(Math.random() * 100) + 1024;
+                        this.temp.timestamp = +new Date();
+                        this.temp.author = '原创作者';
+                        this.list.unshift(this.temp);
+                        this.dialogFormVisible = false;
+                        this.$notify({
+                            title: '成功',
+                            message: '创建成功',
+                            type: 'success',
+                            duration: 2000
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
                 });
             },
             update() {
@@ -295,7 +312,25 @@
                         return v[j]
                     }
                 }))
-            }
+            },
+            onImgUploadSuccess(res, file) {
+                this.temp.img = URL.createObjectURL(file.raw);
+            },
+            beforeImgUpload(file) {
+                const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png');
+                const isLt2M = file.size / 1024 / 1024 <= .5;
+
+                if (!isJPG) {
+                    this.$message.error('上传图片只能是 JPG/PNG 格式!');
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传图片大小不能超过 500KB!');
+                }
+                return isJPG && isLt2M;
+            },
+            handleImgRemove(file, fileList){
+                return null
+            },
         }
     }
 </script>
