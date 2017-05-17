@@ -33,7 +33,7 @@
         </el-table>
 
         <!--pagination-->
-        <div v-show="!listLoading" class="pagination-container" style="text-align: right;">
+        <div v-show="!listLoading" class="pagination-container">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
                            :current-page="listQuery.page" :page-sizes="[10,20,30,50]"
                            :page-size="listQuery.pageSize" layout="total, sizes, prev, pager, next, jumper"
