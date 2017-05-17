@@ -15,10 +15,10 @@ npm源速度慢时，安装推荐步骤：
 3. 安装依赖
 `$ npm i`
 
-4. 对于任然报错的，安装cnpm到全局
+4. 对于仍然报错的，安装cnpm到全局
 `$ npm install -g cnpm --registry=https://registry.npm.taobao.org`
 
-5. 使用cnpm单独安装任然报错的包，例如Win中常报错的node-sass
+5. 使用cnpm单独安装仍然报错的包，例如Win中常报错的node-sass
 `$ cnpm i node-sass`
 
 
