@@ -23,11 +23,8 @@ npm源速度慢时，安装推荐步骤：
 
 
 ## 开发
-```bash
-    # 本地开发 开启服务
-    npm run dev
-```
-浏览器访问 [http://localhost:9527](http://localhost:9527)
+1. 本地开发 开启服务 `npm run dev`
+2. 浏览器访问 [http://localhost:9527](http://localhost:9527)
 
 ## 发布
 ```bash
