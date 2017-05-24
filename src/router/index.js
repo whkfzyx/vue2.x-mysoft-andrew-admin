@@ -31,7 +31,7 @@ const AccountManagement = resolve => require(['../views/accountManagement/accoun
 Vue.use(Router);
 
 export default new Router({
-    // mode: 'history', //后端支持可开
+    mode: 'history', //后端支持可开
     scrollBehavior: () => ({y: 0}),
     routes: [
         {path: '/login', component: Login, hidden: true},

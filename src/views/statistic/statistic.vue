@@ -44,7 +44,7 @@
                     <span>{{scope.row.department | departmentFilter}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="数量 or 次数" style="width:8%;">
+            <el-table-column align="center" label="领用数量 or 次数" style="width:8%;">
                 <template scope="scope">
                     <span>{{scope.row.count}}</span>
                 </template>

@@ -25,7 +25,7 @@
                     <span>{{scope.row.department | departmentFilter}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="领用频率/时长" style="width:14%;" prop="department">
+            <el-table-column align="center" label="领用频率 or 时长" style="width:14%;" prop="department">
                 <template scope="scope">
                     <span>{{scope.row.frequency || scope.row.duration}}</span>
                 </template>
@@ -55,7 +55,7 @@
         <!--modal - insert-->
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" :rules="rules" ref="goodsDetailForm"
-                     label-position="right" label-width="90px"
+                     label-position="right" label-width="100px"
                      style='width: 80%;margin:0 auto;'>
                 <el-form-item label="物品名称" prop="name">
                     <el-input v-model="temp.name"></el-input>
@@ -90,26 +90,30 @@
                     </el-radio-group>
                 </el-form-item>
 
-                <el-row v-if="temp.type==='lowValue'">
+                <el-form-item label="是否需归还" prop="need_return">
+                    <el-radio-group v-model="temp.need_return">
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <el-row>
                     <el-col :span="12">
-                        <el-form-item label="领用频率" prop="frequency">
+                        <el-form-item label="领用频率" prop="frequency" v-if="temp.need_return===0">
                             <el-input-number v-model.number="temp.frequency" :min="0" :max="255"
                                              style="display: inline-block; width: 70%;"></el-input-number>
                             <span style="display: inline-block;line-height: 36px;vertical-align: top;">/人·月</span>
                         </el-form-item>
-                    </el-col>
-                    <el-col :span="10" :offset="2">
-                        <el-form-item label="库存" prop="stock">
-                            <el-input-number v-model.number="temp.stock" :min="0" :max="255"></el-input-number>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row v-else-if="temp.type==='fixedAsset'">
-                    <el-col :span="12">
-                        <el-form-item label="可借时长">
+                        <el-form-item label="可借时长" v-else-if="temp.need_return===1">
                             <el-input-number v-model.number="temp.duration" :min="0" :max="255"
                                              style="display: inline-block; width: 70%;"></el-input-number>
                             <span style="display: inline-block;line-height: 36px;vertical-align: top;">天</span>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="10" :offset="2">
+                        <el-form-item label="库存" prop="stock">
+                            <el-input-number v-model.number="temp.stock" :min="0" :max="255"></el-input-number>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -173,6 +177,7 @@
                     stock: 0,
                     name: '',
                     type: '',
+                    need_return: 0,
                 },
                 fileList: [],
                 rules: {
@@ -293,6 +298,7 @@
                     stock: 0,
                     name: '',
                     type: '',
+                    need_return: 0,
                 };
             },
             handleDownload() {

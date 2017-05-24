@@ -6,8 +6,8 @@
             <h3 class="title">明源云-小管家-物品领用系统</h3>
             <el-form-item prop="email">
                 <span class="svg-container"><wscn-icon-svg icon-class="jiedianyoujian"/></span>
-                <el-input name="username" type="text" v-model="loginForm.email" autoComplete="on"
-                          placeholder="用户名"></el-input>
+                <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on"
+                          placeholder="公司邮箱"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <span class="svg-container"><wscn-icon-svg icon-class="mima"/></span>
@@ -19,8 +19,8 @@
                     登录
                 </el-button>
             </el-form-item>
-            <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
-            <div class='tips'>editor账号:editor@wallstreetcn.com 密码随便填</div>
+            <div class='tips'>admin账号为:admin@mingyuanyun.com 密码随便填</div>
+            <div class='tips'>editor账号:editor@mingyuanyun.com 密码随便填</div>
             <div class='tips'>若忘记密码，请其他管理员登录后帮你重置</div>
         </el-form>
     </div>
@@ -36,7 +36,7 @@
         data() {
             const validateEmail = (rule, value, callback) => {
                 if (!isWscnEmail(value)) {
-                    callback(new Error('请输入合法邮箱'));
+                    callback(new Error('请输入公司邮箱'));
                 } else {
                     callback();
                 }
@@ -50,12 +50,12 @@
             };
             return {
                 loginForm: {
-                    email: 'admin@wallstreetcn.com',
+                    email: 'admin',
                     password: ''
                 },
                 loginRules: {
                     email: [
-                        {required: true, trigger: 'blur', validator: validateEmail}
+                        //{required: true, trigger: 'blur', validator: validateEmail}
                     ],
                     password: [
                         {required: true, trigger: 'blur', validator: validatePass}

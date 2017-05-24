@@ -3,8 +3,8 @@
  */
 
 /* 是否是公司邮箱*/
-export function isWscnEmail(str) {
-  const reg = /^[a-z0-9](?:[-_.+]?[a-z0-9]+)*@wallstreetcn\.com$/i;
+export function isMingyuanEmail(str) {
+  const reg = /^[a-z0-9](?:[-_.+]?[a-z0-9]+)*@mingyuanyun\.com$/i;
   return reg.test(str.trim());
 }
 
