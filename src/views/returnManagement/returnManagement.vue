@@ -101,8 +101,8 @@
                 listQuery: {
                     page: 1,
                     pageSize: 20,
-                    title: undefined,
-                    type: undefined,
+                    department: '',
+                    type: '',
                 },
                 calendarTypeOptions,
                 dialogFormVisible: false,

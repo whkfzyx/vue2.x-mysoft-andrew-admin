@@ -2,9 +2,8 @@ import {fetch} from 'utils/fetch';
 
 export function getShouldReturnList(query) {
     return fetch({
-        url: '/getShouldReturnList',
-        method: 'get',
-        params: query
+        url: 'getshouldreturnlist?type=' + query.type + '&department=' + query.department + '&page=' + (query.page || 1) + '&pageSize=' + (query.pageSize || 20),
+        method: 'GET',
     });
 }
 
