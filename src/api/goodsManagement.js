@@ -7,10 +7,11 @@ export function fetchList(query) {
     });
 }
 
-export function removeGoods(goodsId) {
+export function removeGoods(data) {
     return fetch({
-        url: 'removegoods?goodsId=' + goodsId,
-        method: 'POST'
+        url: 'delgood',
+        method: 'POST',
+        data:data
     });
 }
 

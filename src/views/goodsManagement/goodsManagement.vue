@@ -11,8 +11,8 @@
                   border fit highlight-current-row style="width: 100%">
             <el-table-column align="center" label="" style="width:6%;">
                 <template scope="scope">
-                    <div v-if="scope.row.img">
-                        <img :src="scope.row.img" :alt="scope.row.name" style="width:40px;height:auto;">
+                    <div v-if="scope.row.img_url">
+                        <img :src="scope.row.img_url" :alt="scope.row.name" style="width:40px;height:auto;">
                     </div>
                 </template>
             </el-table-column>
@@ -68,7 +68,7 @@
                             :before-upload="beforeImgUpload"
                             :on-success="onImgUploadSuccess"
                             :on-remove="handleImgRemove">
-                        <img v-if="temp.img" :src="temp.img" class="avatar">
+                        <img v-if="temp.img_url" :src="temp.img_url" class="avatar">
                         <i class="el-icon-plus avatar-uploader-icon" v-else></i>
                         <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过500KB，推荐尺寸750x560px</div>
                     </el-upload>
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-    import {fetchList, addGoods, uploadImg, editgoods} from 'api/goodsManagement';
+    import {fetchList, addGoods, uploadImg, editgoods, removeGoods} from 'api/goodsManagement';
     import {parseTime, objectMerge} from 'utils';
     import store from 'store';
 
@@ -159,6 +159,8 @@
                 },
                 temp: {
                     goodsId: undefined,
+                    img: '',
+                    img_url: '',
                     description: '',
                     department: '',
                     frequency: 0,
@@ -236,14 +238,15 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success',
-                        duration: 2000
+                    removeGoods({id: row.id}).then(response => {
+                        this.getList();
+                        this.$notify({
+                            title: '成功',
+                            message: '删除成功',
+                            type: 'success',
+                            duration: 2000
+                        });
                     });
-                    const index = this.list.indexOf(row);
-                    this.list.splice(index, 1);
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -292,6 +295,8 @@
             resetTemp() {
                 this.temp = {
                     goodsId: undefined,
+                    img: '',
+                    img_url: '',
                     description: '',
                     department: '',
                     frequency: 0,
@@ -320,8 +325,10 @@
                     }
                 }))
             },
-            onImgUploadSuccess(res, file) {
-                this.temp.img = URL.createObjectURL(file.raw);
+            onImgUploadSuccess(resp, file) {
+                this.temp.img = resp.data.file_path;
+                this.temp.img_url = resp.data.action_path;
+                console.log('upload success ', resp);
             },
             beforeImgUpload(file) {
                 const isJPG = (file.type === 'image/jpeg');
@@ -340,6 +347,11 @@
                 formData.append("UploadForm[file]", file, 'img.jpg');
                 formData.append("upsign", this.$store.state.user.enumValues.upsign);
                 return uploadImg(formData)
+                    .then(resp => {
+                        this.temp.img = resp.data.file_path;
+                        this.temp.img_url = resp.data.action_path;
+                        return new Promise
+                    });
             },
             handleImgRemove(file, fileList){
                 return null
