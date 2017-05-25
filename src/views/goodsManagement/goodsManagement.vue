@@ -280,7 +280,13 @@
                 });
             },
             update() {
-                editgoods(this.temp).then(response => {
+                editgoods({
+                    ...this.temp,
+                    duration: (this.temp.duration * 86400).toString(),
+                    frequency: (this.temp.frequency).toString(),
+                    categore: parseInt(this.temp.categore),
+                    department: parseInt(this.temp.department),
+                }).then(response => {
                     this.getList();
                     this.dialogFormVisible = false;
                     this.$notify({
