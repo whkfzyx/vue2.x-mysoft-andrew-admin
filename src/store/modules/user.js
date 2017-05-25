@@ -1,4 +1,4 @@
-import {loginByEmail, logout, getInfo} from 'api/login';
+import {loginByEmail, logout, getInfo, getEnum} from 'api/login';
 import Cookies from 'js-cookie';
 
 const user = {
@@ -7,6 +7,7 @@ const user = {
         uid: undefined,
         token: Cookies.get('X-Ivanka-Token'),
         roles: [],
+        enumValues: [],
     },
 
     mutations: {
@@ -23,6 +24,9 @@ const user = {
         SET_ROLES: (state, roles) => {
             state.roles = roles;
         },
+        SET_ENUMS: (state, data) => {
+            state.enumValues = data;
+        },
     },
 
     actions: {
@@ -32,9 +36,10 @@ const user = {
             return new Promise((resolve, reject) => {
                 loginByEmail(email, userInfo.password).then(response => {
                     const data = response.data;
-                    Cookies.set('X-Ivanka-Token', response.data.token);
+                    Cookies.set('X-Ivanka-Token', data.token);
                     commit('SET_TOKEN', data.token);
                     commit('SET_EMAIL', email);
+                    commit('SET_ROLES', ['admin']);
                     resolve();
                 }).catch(error => {
                     reject(error);
@@ -45,13 +50,8 @@ const user = {
         // 获取用户信息
         GetInfo({commit, state}) {
             return new Promise((resolve, reject) => {
-                getInfo(state.token).then(response => {
-                    const data = response.data;
-                    commit('SET_ROLES', data.role);
-                    resolve(response);
-                }).catch(error => {
-                    reject(error);
-                });
+                commit('SET_ROLES', ['admin']);
+                resolve();
             });
         },
 
@@ -76,7 +76,20 @@ const user = {
                 Cookies.remove('X-Ivanka-Token');
                 resolve();
             });
-        }
+        },
+
+        //get enums
+        GetEnumValues({commit}) {
+            return new Promise(resolve => {
+                getEnum().then(response => {
+                    const data = response.data;
+                    commit('SET_ENUMS', data);
+                    resolve();
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
     }
 };
 

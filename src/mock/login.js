@@ -6,7 +6,6 @@ const userMap = {
     editor: {
         role: ['editor'],
         token: 'editor',
-
     },
 }
 

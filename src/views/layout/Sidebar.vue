@@ -22,6 +22,7 @@
 
 <script>
     import permissionRoutes from 'store/permission';
+
     export default {
       name: 'Sidebar',
       data() {

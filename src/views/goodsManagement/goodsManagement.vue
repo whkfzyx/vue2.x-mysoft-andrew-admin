@@ -7,37 +7,35 @@
         </div>
 
         <!--table-->
-        <el-table :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row
-                  style="width: 100%">
+        <el-table :key='tableKey' :data="list" v-loading.body="listLoading"
+                  border fit highlight-current-row style="width: 100%">
             <el-table-column align="center" label="" style="width:6%;">
                 <template scope="scope">
-                    <div><img :src="scope.row.img" :alt="scope.row.name" style="width:40px;height:auto;"></div>
+                    <div v-if="scope.row.img">
+                        <img :src="scope.row.img" :alt="scope.row.name" style="width:40px;height:auto;">
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="名称" style="width:10%;" prop="name"></el-table-column>
-            <el-table-column align="center" label="性质" style="width:8%;">
-                <template scope="scope">
-                    <span>{{scope.row.type | typeFilter}}</span>
-                </template>
-            </el-table-column>
+            <el-table-column align="center" label="性质" style="width:8%;" prop="categore_name"></el-table-column>
             <el-table-column align="center" label="隶属部门" style="width:8%;">
                 <template scope="scope">
-                    <span>{{scope.row.department | departmentFilter}}</span>
+                    <span>{{departmentFilter(scope.row.department)}}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="领用频率 or 时长" style="width:14%;" prop="department">
                 <template scope="scope">
-                    <span>{{scope.row.frequency || scope.row.duration}}</span>
+                    <span>{{scope.row.need_return ? (scope.row.duration === '0' ? '长期' : (parseInt(scope.row.duration) / 86400).toFixed(1) + ' 天') : scope.row.frequency + ' /人·月'}}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="库存" style="width:10%;" prop="stock"></el-table-column>
             <el-table-column align="center" label="操作" style="width:44%;">
                 <template scope="scope">
                     <el-button size="small"
-                               @click="handleModifyStatus(scope.row,'published')">修改
+                               @click="handleUpdate(scope.row)">修改
                     </el-button>
                     <el-button size="small" type="danger"
-                               @click="handleModifyStatus(scope.row,'deleted')">删除
+                               @click="handleDelete(scope.row)">删除
                     </el-button>
                 </template>
             </el-table-column>
@@ -56,36 +54,39 @@
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" :rules="rules" ref="goodsDetailForm"
                      label-position="right" label-width="100px"
-                     style='width: 80%;margin:0 auto;'>
+                     style='width: 85%;margin:0 auto;'>
                 <el-form-item label="物品名称" prop="name">
                     <el-input v-model="temp.name"></el-input>
                 </el-form-item>
 
                 <el-form-item label="上传图片" prop="img">
                     <el-upload
-                            action="https://jsonplaceholder.typicode.com/posts/"
+                            class="avatar-uploader"
+                            action=""
                             :multiple="false"
-                            :file-list="fileList"
+                            :show-file-list="false"
                             :before-upload="beforeImgUpload"
                             :on-success="onImgUploadSuccess"
                             :on-remove="handleImgRemove">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500KB</div>
+                        <img v-if="temp.img" :src="temp.img" class="avatar">
+                        <i class="el-icon-plus avatar-uploader-icon" v-else></i>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过500KB，推荐尺寸750x560px</div>
                     </el-upload>
                 </el-form-item>
 
                 <el-form-item label="隶属部门" prop="department">
                     <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
-                        <el-option v-for="item in departmentOptions" :key="item.key"
-                                   :label="item.display_name" :value="item.key">
+                        <el-option v-for="(item,key) in this.$store.state.user.enumValues.departments" :key="key"
+                                   :label="item" :value="key">
                         </el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="物品性质" prop="type">
-                    <el-radio-group v-model="temp.type">
-                        <el-radio v-for="item in typeOptions" :key="item.key" :label="item.key">
-                            {{item.display_name}}
+                <el-form-item label="物品性质" prop="categore">
+                    <el-radio-group v-model="temp.categore">
+                        <el-radio v-for="(item,key) in this.$store.state.user.enumValues.categores" :key="item.id"
+                                  :label="item.id" :value="key">
+                            {{item.name}}
                         </el-radio>
                     </el-radio-group>
                 </el-form-item>
@@ -98,20 +99,22 @@
                 </el-form-item>
 
                 <el-row>
-                    <el-col :span="12">
+                    <el-col :span="14">
                         <el-form-item label="领用频率" prop="frequency" v-if="temp.need_return===0">
                             <el-input-number v-model.number="temp.frequency" :min="0" :max="255"
-                                             style="display: inline-block; width: 70%;"></el-input-number>
-                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">/人·月</span>
+                                             style="display: inline-block; width: 60%;"></el-input-number>
+                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">/人·月 <span
+                                    style="color:#ccc;font-size: 10px;">0为不限</span></span>
                         </el-form-item>
                         <el-form-item label="可借时长" v-else-if="temp.need_return===1">
                             <el-input-number v-model.number="temp.duration" :min="0" :max="255"
-                                             style="display: inline-block; width: 70%;"></el-input-number>
-                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">天</span>
+                                             style="display: inline-block; width: 60%;"></el-input-number>
+                            <span style="display: inline-block;line-height: 36px;vertical-align: top;">天 <span
+                                    style="color:#ccc;font-size: 10px;">0为不限</span></span>
                         </el-form-item>
                     </el-col>
 
-                    <el-col :span="10" :offset="2">
+                    <el-col :span="10">
                         <el-form-item label="库存" prop="stock">
                             <el-input-number v-model.number="temp.stock" :min="0" :max="255"></el-input-number>
                         </el-form-item>
@@ -137,36 +140,22 @@
 </template>
 
 <script>
-    import {fetchList} from 'api/goodsManagement';
+    import {fetchList, addGoods, uploadImg, editgoods} from 'api/goodsManagement';
     import {parseTime, objectMerge} from 'utils';
-
-    const typeOptions = [
-        {key: 'lowValue', display_name: '低值易耗'},
-        {key: 'fixedAsset', display_name: '固定资产'},
-        {key: 'loveHouse', display_name: '爱心屋'},
-    ];
-    const departmentOptions = [
-        {key: 'administration', display_name: '行政'},
-        {key: 'it', display_name: 'IT'},
-        {key: 'finance', display_name: '财务'},
-    ];
-    const durationTypeOptions = [
-        {key: 'longTerm', display_name: '长期'},
-        {key: 'duration', display_name: '时间段'},
-    ];
+    import store from 'store';
 
     export default {
         name: 'goodsManagement',
         data() {
             return {
-                list: null,
+                list: [],
                 total: null,
                 listLoading: true,
                 listQuery: {
                     page: 1,
                     pageSize: 20,
-                    title: undefined,
-                    type: undefined,
+                    department: '',
+                    type: '',
                 },
                 temp: {
                     goodsId: undefined,
@@ -176,18 +165,16 @@
                     duration: 0,
                     stock: 0,
                     name: '',
-                    type: '',
+                    categore: '',
                     need_return: 0,
                 },
-                fileList: [],
                 rules: {
                     name: [{required: true, message: '请输入物品名称', trigger: 'blur'}],
                     department: [{required: true, message: '请选择隶属部门', trigger: 'change'}],
-                    type: [{required: true, message: '请选择物品性质', trigger: 'change'}],
+                    categore: [{required: true, message: '请选择物品性质', trigger: 'change'}],
                 },
-                typeOptions,
-                departmentOptions,
-                durationTypeOptions,
+                typeOptions: this.$store.state.user.enumValues.categores,
+                departmentOptions: this.$store.state.user.enumValues.departments,
                 dialogFormVisible: false,
                 dialogStatus: '',
                 textMap: {
@@ -200,20 +187,15 @@
         created() {
             this.getList();
         },
-        filters: {
-            typeFilter(key) {
-                return typeOptions.find(item => item.key === key).display_name
-            },
-            departmentFilter(key) {
-                return departmentOptions.find(item => item.key === key).display_name
-            },
-        },
         methods: {
+            departmentFilter(key) {
+                return this.$store.state.user.enumValues.departments[key]
+            },
             getList() {
                 this.listLoading = true;
                 fetchList(this.listQuery).then(response => {
                     this.list = response.data.list;
-                    this.total = response.data.total;
+                    this.total = parseInt(response.data.count);
                     this.listLoading = false;
                 })
             },
@@ -238,33 +220,55 @@
                 this.dialogFormVisible = true;
             },
             handleUpdate(row) {
-                objectMerge(this.temp, row)
+                this.resetTemp();
+                objectMerge(this.temp, {
+                    ...row,
+                    department: (row.department).toString(),
+                    categore: (row.categore).toString(),
+                    duration: (parseInt(row.duration) / 86400).toFixed(1),
+                });
                 this.dialogStatus = 'update';
                 this.dialogFormVisible = true;
             },
             handleDelete(row) {
-                this.$notify({
-                    title: '成功',
-                    message: '删除成功',
-                    type: 'success',
-                    duration: 2000
+                this.$confirm('确认删除该物品?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$notify({
+                        title: '成功',
+                        message: '删除成功',
+                        type: 'success',
+                        duration: 2000
+                    });
+                    const index = this.list.indexOf(row);
+                    this.list.splice(index, 1);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
                 });
-                const index = this.list.indexOf(row);
-                this.list.splice(index, 1);
             },
             create(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.temp.id = parseInt(Math.random() * 100) + 1024;
-                        this.temp.timestamp = +new Date();
-                        this.temp.author = '原创作者';
-                        this.list.unshift(this.temp);
-                        this.dialogFormVisible = false;
-                        this.$notify({
-                            title: '成功',
-                            message: '创建成功',
-                            type: 'success',
-                            duration: 2000
+                        addGoods({
+                            ...this.temp,
+                            duration: (this.temp.duration * 86400).toString(),
+                            frequency: (this.temp.frequency).toString(),
+                            categore: parseInt(this.temp.categore),
+                            department: parseInt(this.temp.department),
+                        }).then(response => {
+                            this.getList();
+                            this.dialogFormVisible = false;
+                            this.$notify({
+                                title: '成功',
+                                message: '添加成功',
+                                type: 'success',
+                                duration: 2000
+                            });
                         });
                     } else {
                         console.log('error submit!!');
@@ -273,20 +277,17 @@
                 });
             },
             update() {
-                this.temp.timestamp = +this.temp.timestamp;
-                for (const v of this.list) {
-                    if (v.id === this.temp.id) {
-                        objectMerge(v, this.temp);
-                        break;
-                    }
-                }
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '更新成功',
-                    type: 'success',
-                    duration: 2000
+                editgoods(this.temp).then(response => {
+                    this.getList();
+                    this.dialogFormVisible = false;
+                    this.$notify({
+                        title: '成功',
+                        message: '修改成功',
+                        type: 'success',
+                        duration: 2000
+                    });
                 });
+                this.dialogFormVisible = false;
             },
             resetTemp() {
                 this.temp = {
@@ -297,7 +298,7 @@
                     duration: 0,
                     stock: 0,
                     name: '',
-                    type: '',
+                    categore: '',
                     need_return: 0,
                 };
             },
@@ -323,16 +324,22 @@
                 this.temp.img = URL.createObjectURL(file.raw);
             },
             beforeImgUpload(file) {
-                const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png');
+                const isJPG = (file.type === 'image/jpeg');
                 const isLt2M = file.size / 1024 / 1024 <= .5;
 
                 if (!isJPG) {
-                    this.$message.error('上传图片只能是 JPG/PNG 格式!');
+                    this.$message.error('上传图片只能是 JPG 格式!');
+                    return false
                 }
                 if (!isLt2M) {
                     this.$message.error('上传图片大小不能超过 500KB!');
+                    return false
                 }
-                return isJPG && isLt2M;
+
+                let formData = new FormData();
+                formData.append("UploadForm[file]", file, 'img.jpg');
+                formData.append("upsign", this.$store.state.user.enumValues.upsign);
+                return uploadImg(formData)
             },
             handleImgRemove(file, fileList){
                 return null
@@ -340,3 +347,37 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        .tip {
+            display: inline-block;
+            margin-left: 16px;
+        }
+    }
+
+    .avatar-uploader .el-upload:hover {
+        border-color: #20a0ff;
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 170px;
+        height: 128px;
+        line-height: 128px;
+        text-align: center;
+        border: 1px solid #ccc;
+    }
+
+    .avatar {
+        width: 170px;
+        height: 128px;
+        display: block;
+    }
+</style>

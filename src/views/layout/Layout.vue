@@ -36,23 +36,20 @@
                 return
             }
 
-            permission.init({
-                roles: 'admin',
-                router: router.options.routes
+            // loadingInstance = Loading.service({ fullscreen: true, text: '玩命加载中' });
+            store.dispatch('GetEnumValues');
+            store.dispatch('GetInfo').then(() => {
+                permission.init({
+                    roles: ['admin'],
+                    router: router.options.routes
+                });
+                //   loadingInstance.close();
+                next();
+            }).catch(err => {
+                //   loadingInstance.close();
+                console.log(err);
             });
 
-            /*// loadingInstance = Loading.service({ fullscreen: true, text: '玩命加载中' });
-             store.dispatch('GetInfo').then(() => {
-             permission.init({
-             roles: store.getters.roles,
-             router: router.options.routes
-             });
-             //   loadingInstance.close();
-             next();
-             }).catch(err => {
-             //   loadingInstance.close();
-             console.log(err);
-             });*/
         }
     }
 </script>

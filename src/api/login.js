@@ -11,6 +11,12 @@ export function loginByEmail(email, password) {
         data: data
     });
 }
+export function getEnum() {
+    return fetch({
+        url: 'getenum',
+        method: 'get',
+    });
+}
 
 export function logout() {
     return fetch({

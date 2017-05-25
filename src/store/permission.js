@@ -5,7 +5,9 @@ const permission = {
     init(data) {
         const {roles, router} = data;
         const permissionRoutes = router.filter(v => {
-            if (roles.indexOf('admin') >= 0) return true;
+            if (roles.indexOf('admin') >= 0) {
+                return true;
+            }
             if (this.hasPermission(roles, v)) {
                 if (v.children && v.children.length > 0) {
                     v.children = v.children.filter(child => {
@@ -27,7 +29,6 @@ const permission = {
         return this.permissionRoutes
     },
     hasPermission(roles, route) {
-        console.log(roles, route)
         if (route.meta && route.meta.role) {
             return roles.some(role => route.meta.role.indexOf(role) >= 0)
         } else {
