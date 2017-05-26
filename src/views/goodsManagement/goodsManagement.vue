@@ -290,6 +290,7 @@
                 this.dialogFormVisible = false;
             },
             resetTemp() {
+                this.$refs['goodsDetailForm'] && this.$refs['goodsDetailForm'].resetFields();
                 this.temp = {
                     goodsId: undefined,
                     img: '',

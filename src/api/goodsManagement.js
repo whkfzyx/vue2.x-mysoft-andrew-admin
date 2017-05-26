@@ -3,7 +3,7 @@ import {fetch} from 'utils/fetch';
 export function fetchList(query) {
     return fetch({
         url: 'getgoodslist?type=' + query.type + '&department=' + query.department + '&page=' + (query.page || 1) + '&pageSize=' + (query.pageSize || 20),
-        method: 'get'
+        method: 'GET'
     });
 }
 

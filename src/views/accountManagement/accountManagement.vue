@@ -8,22 +8,19 @@
 
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row
                   style="width: 100%">
-            <el-table-column align="center" label="用户名" style="width:6%;">
+            <el-table-column align="center" label="用户名" prop="username">
+            </el-table-column>
+
+            <el-table-column label="管理部门">
                 <template scope="scope">
-                    <span>{{scope.row.username}}</span>
+                    <span>{{departmentFilter(scope.row.department)}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column label="管理部门" style="width:6%;">
-                <template scope="scope">
-                    <span>{{scope.row.department | departmentFilter}}</span>
-                </template>
-            </el-table-column>
-
-            <el-table-column align="center" label="操作" style="width:44%;">
+            <el-table-column align="center" label="操作">
                 <template scope="scope">
                     <el-button size="small"
-                               @click="handleModifyStatus(scope.row,'published')">修改
+                               @click="handleUpdate(scope.row)">修改
                     </el-button>
                     <el-button size="small" type="danger"
                                @click="handleDelete(scope.row)">删除
@@ -43,93 +40,113 @@
 
         <!--insert and update modal-->
         <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
-            <el-form class="small-space" :model="temp" label-position="left" label-width="70px"
-                     style='width: 400px; margin-left:50px;'>
-                <el-form-item label="隶属部门">
+            <el-form class="small-space" :model="temp" label-position="right" label-width="100px"
+                     style='width: 400px; margin-left:50px;' :rules="rules" ref="insertAccountForm">
+                <el-form-item label="隶属部门" prop="department">
                     <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
-                        <el-option v-for="item in departmentOptions" :key="item.key" :label="item.display_name"
-                                   :value="item.key">
+                        <el-option v-for="(item,key) in this.$store.state.user.enumValues.departments" :key="key"
+                                   :label="item" :value="key">
                         </el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="用户名">
-                    <el-input v-model="temp.username"></el-input>
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="temp.username" :disabled="dialogStatus==='update'" :maxlength="100"></el-input>
                 </el-form-item>
 
-                <el-form-item label="密码">
-                    <el-input v-model="temp.password" type="password"></el-input>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="temp.password" type="password" :maxlength="255"></el-input>
                 </el-form-item>
 
-                <el-form-item label="重复密码">
-                    <el-input v-model="temp.passwordRepeat" type="password"></el-input>
+                <el-form-item label="重复密码" prop="passwordRepeat">
+                    <el-input v-model="temp.passwordRepeat" type="password" :maxlength="255"></el-input>
                 </el-form-item>
             </el-form>
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button v-if="dialogStatus=='create'" type="primary" @click="create">确 定</el-button>
-                <el-button v-else type="primary" @click="update">确 定</el-button>
+                <el-button v-if="dialogStatus=='create'" type="primary" @click="create('insertAccountForm')">确 定
+                </el-button>
+                <el-button v-else type="primary" @click="update('insertAccountForm')">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <script>
-    import {getAccountList} from 'api/accountManagement';
+    import {getAccountList, createAccount, updateAccount, removeAccount} from 'api/accountManagement';
     import {parseTime, objectMerge} from 'utils';
-
-    const departmentOptions = [
-        {key: 'administration', display_name: '行政'},
-        {key: 'it', display_name: 'IT'},
-        {key: 'finance', display_name: '财务'},
-    ];
+    import {isMingyuanEmail} from 'utils/validate';
 
     export default {
         name: 'accountManagement',
         data() {
+            const validateEmail = (rule, value, callback) => {
+                if (!isMingyuanEmail(value)) {
+                    callback(new Error('请输入公司@mingyuanyun.com邮箱'));
+                } else {
+                    callback();
+                }
+            };
+            const validatePass = (rule, value, callback) => {
+                if (value.length < 6) {
+                    callback(new Error('密码不能小于6位'));
+                } else {
+                    callback();
+                }
+            };
+            const validatePasswordRepeat = (rule, value, callback) => {
+                if (value !== this.temp.password) {
+                    callback(new Error('两次输入密码不一致'));
+                } else {
+                    callback();
+                }
+            };
             return {
-                list: null,
+                list: [],
                 total: null,
                 listLoading: true,
                 listQuery: {
                     page: 1,
                     pageSize: 20,
-                    title: undefined,
-                    type: undefined,
+                    department: '',
                 },
                 temp: {
                     department: '',
-                    username: '',
+                    username: '@mingyuanyun.com',
                     password: '',
                     passwordRepeat: '',
                 },
-                departmentOptions,
                 dialogFormVisible: false,
                 dialogStatus: '',
                 textMap: {
                     update: '编辑',
                     create: '创建'
                 },
-                tableKey: 0
+                tableKey: 0,
+                rules: {
+                    username: [{required: true, trigger: 'blur', validator: validateEmail}],
+                    department: [{required: true, message: '请选择管理部门', trigger: 'change'}],
+                    password: [{required: true, trigger: 'blur', validator: validatePass}],
+                    passwordRepeat: [{required: true, trigger: 'blur', validator: validatePasswordRepeat}],
+                },
             }
         },
         created() {
             this.getList();
         },
-        filters: {
-            departmentFilter(key) {
-                return departmentOptions.find(item => item.key === key).display_name
-            },
-        },
+        filters: {},
         methods: {
+            departmentFilter(key) {
+                return this.$store.state.user.enumValues.departments[key]
+            },
             getList() {
                 this.listLoading = true;
                 getAccountList(this.listQuery).then(response => {
                     this.list = response.data.list;
-                    this.total = response.data.total;
+                    this.total = parseInt(response.data.count);
                     this.listLoading = false;
-                })
+                });
             },
             handleSizeChange(val) {
                 this.listQuery.pageSize = val;
@@ -139,88 +156,87 @@
                 this.listQuery.page = val;
                 this.getList();
             },
-            handleModifyStatus(row, status) {
-                this.$message({
-                    message: '操作成功',
-                    type: 'success'
-                });
-                row.status = status;
-            },
             handleCreate() {
                 this.resetTemp();
                 this.dialogStatus = 'create';
                 this.dialogFormVisible = true;
             },
             handleUpdate(row) {
-                objectMerge(this.temp, row)
+                this.resetTemp();
+                objectMerge(this.temp, {username: row.username, department: row.department, id: row.id});
                 this.dialogStatus = 'update';
                 this.dialogFormVisible = true;
             },
             handleDelete(row) {
-                this.$notify({
-                    title: '成功',
-                    message: '删除成功',
-                    type: 'success',
-                    duration: 2000
-                });
-                const index = this.list.indexOf(row);
-                this.list.splice(index, 1);
-            },
-            create() {
-                this.temp.id = parseInt(Math.random() * 100) + 1024;
-                this.temp.timestamp = +new Date();
-                this.temp.author = '原创作者';
-                this.list.unshift(this.temp);
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '创建成功',
-                    type: 'success',
-                    duration: 2000
+                removeAccount({id: row.id}).then(resp => {
+                    this.getList();
+                    this.$notify({
+                        title: '成功',
+                        message: '删除成功',
+                        type: 'success',
+                        duration: 2000
+                    });
                 });
             },
-            update() {
-                this.temp.timestamp = +this.temp.timestamp;
-                for (const v of this.list) {
-                    if (v.id === this.temp.id) {
-                        objectMerge(v, this.temp);
-                        break;
+            create(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        createAccount({
+                            username: this.temp.username,
+                            password: this.temp.password,
+                            re_password: this.temp.passwordRepeat,
+                            department: this.temp.department,
+                        }).then(resp => {
+                            this.getList();
+                            this.dialogFormVisible = false;
+                            this.$notify({
+                                title: '成功',
+                                message: '创建成功',
+                                type: 'success',
+                                duration: 2000
+                            });
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
                     }
-                }
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '更新成功',
-                    type: 'success',
-                    duration: 2000
+                });
+            },
+            update(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        updateAccount({
+                            id: this.temp.id,
+                            username: this.temp.username,
+                            password: this.temp.password,
+                            re_password: this.temp.passwordRepeat,
+                            department: this.temp.department,
+                        }).then(resp => {
+                            this.getList();
+                            this.dialogFormVisible = false;
+                            this.$notify({
+                                title: '成功',
+                                message: '修改成功',
+                                type: 'success',
+                                duration: 2000
+                            });
+                            this.dialogFormVisible = false;
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
                 });
             },
             resetTemp() {
+                this.$refs['insertAccountForm'] && this.$refs['insertAccountForm'].resetFields();
                 this.temp = {
                     department: '',
-                    username: '',
+                    username: '@mingyuanyun.com',
                     password: '',
                     passwordRepeat: '',
                 };
             },
-            handleDownload() {
-                require.ensure([], () => {
-                    const {export_json_to_excel} = require('vendor/Export2Excel');
-                    const tHeader = ['时间', '地区', '类型', '标题', '重要性'];
-                    const filterVal = ['timestamp', 'province', 'type', 'title', 'importance'];
-                    const data = this.formatJson(filterVal, this.list);
-                    export_json_to_excel(tHeader, data, 'table数据');
-                })
-            },
-            formatJson(filterVal, jsonData) {
-                return jsonData.map(v => filterVal.map(j => {
-                    if (j === 'timestamp') {
-                        return parseTime(v[j])
-                    } else {
-                        return v[j]
-                    }
-                }))
-            }
         }
     }
 </script>

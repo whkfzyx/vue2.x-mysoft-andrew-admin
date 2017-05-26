@@ -28,15 +28,15 @@
 
 <script>
     import {mapGetters} from 'vuex';
-    import {isWscnEmail} from 'utils/validate';
+    import {isMingyuanEmail} from 'utils/validate';
     // import { getQueryObject } from 'utils';
 
     export default {
         name: 'login',
         data() {
             const validateEmail = (rule, value, callback) => {
-                if (!isWscnEmail(value)) {
-                    callback(new Error('请输入公司邮箱'));
+                if (!isMingyuanEmail(value)) {
+                    callback(new Error('请输入公司@mingyuanyun.com邮箱'));
                 } else {
                     callback();
                 }

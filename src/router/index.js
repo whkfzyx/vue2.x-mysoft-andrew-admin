@@ -83,7 +83,7 @@ export default new Router({
             icon: 'quanxian',
             noDropdown: true,
             children: [
-                {path: 'index', component: AccountManagement, name: '帐户管理', meta: {role: ['admin']}}
+                {path: 'index', component: AccountManagement, name: '帐户管理'}
             ],
         },
         {path: '*', redirect: '/404', hidden: true}
