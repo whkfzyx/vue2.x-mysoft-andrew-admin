@@ -2,16 +2,20 @@
     <div class="app-container calendar-list-container">
         <!--归还-->
         <div class="return-box">
-            <el-row>
-                <el-col :span="6">
-                    <el-input placeholder="固定资产编号 或 流水号" v-model="returnId">
-                    </el-input>
-                </el-col>
-                <el-col :span="2" :offset="1">
-                    <el-button class="filter-item" type="primary" @click="handleReturn">归还
-                    </el-button>
-                </el-col>
-            </el-row>
+            <el-form :model="form" :rules="rules" ref="returnForm"
+                     label-position="right" label-width="200px">
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="固定资产编号 或 流水号" prop="returnId">
+                            <el-input v-model="form.returnId"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="4" :offset="1">
+                        <el-button style="width:90px;" type="primary" @click="handleReturn('returnForm')">归 还
+                        </el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
         </div>
 
         <!--催还列表-->
@@ -20,32 +24,32 @@
         </el-row>
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row
                   style="width: 100%">
-            <el-table-column align="center" label="应还日期" style="width:10%;">
+            <el-table-column align="center" label="应还日期">
                 <template scope="scope">
                     <span>{{new Date((parseInt(scope.row.return_time) * 1000)) | parseTime('{y}-{m}-{d}')}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="" style="width:5%;">
+            <el-table-column align="center" label="">
                 <template scope="scope">
                     <div v-if="scope.row.good_img"><img :src="scope.row.good_img" :alt="scope.row.good_name"
                                                         style="width:40px;height:auto;"></div>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="物品" style="width:7%;" prop="good_name"></el-table-column>
+            <el-table-column align="center" label="物品" prop="good_name"></el-table-column>
 
-            <el-table-column align="center" label="物品隶属" style="width:7%;" prop="good_department"></el-table-column>
+            <el-table-column align="center" label="流水号" prop="order_no"></el-table-column>
 
-            <el-table-column align="center" label="借用者" style="width:7%;" prop="user_name"></el-table-column>
+            <el-table-column align="center" label="固定资产编号" prop="asset_sn"></el-table-column>
 
-            <el-table-column align="center" label="借用者电话" style="width:7%;" prop="user_phone"></el-table-column>
+            <el-table-column align="center" label="物品隶属" prop="good_department"></el-table-column>
 
-            <el-table-column align="center" label="借用者Email" style="width:7%;" prop="user_email"></el-table-column>
+            <el-table-column align="center" label="借用者" prop="user_name"></el-table-column>
 
-            <el-table-column align="center" label="流水号" style="width:7%;" prop="order_no"></el-table-column>
+            <el-table-column align="center" label="借用者电话" prop="user_phone"></el-table-column>
 
-            <el-table-column align="center" label="固定资产编号" style="width:7%;" prop="asset_sn"></el-table-column>
+            <el-table-column align="center" label="借用者Email" prop="user_email"></el-table-column>
         </el-table>
 
         <!--pagination-->
@@ -63,18 +67,6 @@
     import {returnFixedAsset, getShouldReturnList} from 'api/returnManagement';
     import {parseTime, objectMerge} from 'utils';
 
-    const calendarTypeOptions = [
-        {key: 'FD', display_name: '经济数据'},
-        {key: 'FE', display_name: '财经大事'},
-        {key: 'BI', display_name: '国债发行'},
-        {key: 'VN', display_name: '假期报告'}
-    ];
-    const departmentOptions = [
-        {key: 'administration', display_name: '行政'},
-        {key: 'finance', display_name: '财务'},
-        {key: 'it', display_name: 'IT'},
-    ];
-
     export default {
         name: 'returnManagement',
         data() {
@@ -82,31 +74,27 @@
                 list: [],
                 total: null,
                 listLoading: true,
-                returnId: '',
                 listQuery: {
                     page: 1,
                     pageSize: 20,
                     department: '',
                     type: '',
                 },
-                calendarTypeOptions,
-                dialogFormVisible: false,
-                dialogStatus: '',
-                textMap: {
-                    update: '编辑',
-                    create: '创建'
+                form: {
+                    returnId: '',
                 },
-                tableKey: 0
+                tableKey: 0,
+                rules: {
+                    returnId: [
+                        {required: true, message: '请输入固定资产编号 或 流水号', trigger: 'blur'}
+                    ],
+                },
             }
         },
         created() {
             this.getList();
         },
-        filters: {
-            typeFilter(type) {
-                return calendarTypeKeyValue[type]
-            },
-        },
+        filters: {},
         methods: {
             departmentFilter(key) {
                 return this.$store.state.user.enumValues.departments[key]
@@ -119,17 +107,23 @@
                     this.listLoading = false;
                 })
             },
-            handleReturn() {
-                this.$notify({
-                    title: '成功',
-                    message: '归还成功',
-                    type: 'success'
+            handleReturn(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        returnFixedAsset(this.form.returnId).then(response => {
+                            this.$notify({
+                                title: '成功',
+                                message: '归还成功',
+                                type: 'success'
+                            });
+                            this.getList();
+                            this.$refs[formName].resetFields();
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
                 });
-                setTimeout(() => this.$notify.error({
-                    title: '失败',
-                    message: '这是失败提示...',
-                }), 500);
-                this.getList();
             },
             handleSizeChange(val) {
                 this.listQuery.pageSize = val;
@@ -138,24 +132,6 @@
             handleCurrentChange(val) {
                 this.listQuery.page = val;
                 this.getList();
-            },
-            handleModifyStatus(row, status) {
-                this.$message({
-                    message: '操作成功',
-                    type: 'success'
-                });
-                row.status = status;
-            },
-            resetTemp() {
-                this.temp = {
-                    id: undefined,
-                    importance: 0,
-                    remark: '',
-                    timestamp: 0,
-                    title: '',
-                    status: 'published',
-                    type: ''
-                };
             },
             handleDownload() {
                 require.ensure([], () => {
@@ -181,7 +157,5 @@
 
 <style rel="stylesheet/scss" lang="scss" scoped>
     .return-box {
-        padding: 15px 20px;
-        border-radius: 5px;
     }
 </style>

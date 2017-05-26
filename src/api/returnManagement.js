@@ -7,10 +7,12 @@ export function getShouldReturnList(query) {
     });
 }
 
-export function returnFixedAsset(data) {
+export function returnFixedAsset(number) {
     return fetch({
         url: '/goodsreturn',
         method: 'POST',
-        data: data,
+        data: {
+            number: number,
+        },
     });
 }

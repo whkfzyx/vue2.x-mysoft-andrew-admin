@@ -9,27 +9,27 @@
         <!--table-->
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading"
                   border fit highlight-current-row style="width: 100%">
-            <el-table-column align="center" label="" style="width:6%;">
+            <el-table-column align="center" label="">
                 <template scope="scope">
                     <div v-if="scope.row.img_url">
                         <img :src="scope.row.img_url" :alt="scope.row.name" style="width:40px;height:auto;">
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="名称" style="width:10%;" prop="name"></el-table-column>
-            <el-table-column align="center" label="性质" style="width:8%;" prop="categore_name"></el-table-column>
-            <el-table-column align="center" label="隶属部门" style="width:8%;">
+            <el-table-column align="center" label="名称" prop="name"></el-table-column>
+            <el-table-column align="center" label="性质" prop="categore_name"></el-table-column>
+            <el-table-column align="center" label="隶属部门">
                 <template scope="scope">
                     <span>{{departmentFilter(scope.row.department)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="领用频率 or 时长" style="width:14%;" prop="department">
+            <el-table-column align="center" label="领用频率 or 时长" prop="department">
                 <template scope="scope">
                     <span>{{scope.row.need_return ? (scope.row.duration === '0' ? '长期' : (parseInt(scope.row.duration) / 86400).toFixed(1) + ' 天') : scope.row.frequency + ' /人·月'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="库存" style="width:10%;" prop="stock"></el-table-column>
-            <el-table-column align="center" label="操作" style="width:44%;">
+            <el-table-column align="center" label="库存" prop="stock"></el-table-column>
+            <el-table-column align="center" label="操作">
                 <template scope="scope">
                     <el-button size="small"
                                @click="handleUpdate(scope.row)">修改

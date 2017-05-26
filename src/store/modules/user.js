@@ -1,5 +1,6 @@
 import {loginByEmail, logout, getInfo, getEnum} from 'api/login';
 import Cookies from 'js-cookie';
+import {Message} from 'element-ui';
 
 const user = {
     state: {
@@ -41,6 +42,12 @@ const user = {
                     commit('SET_EMAIL', email);
                     commit('SET_ROLES', ['admin']);
                     resolve();
+                }, err => {
+                    Message({
+                        message: '用户名/密码有错误',
+                        type: 'error',
+                        duration: 2 * 1000
+                    });
                 }).catch(error => {
                     reject(error);
                 });

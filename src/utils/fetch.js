@@ -17,7 +17,6 @@ export function fetch(options) {
             .then(response => {
                 const res = response.data;
                 if (res.success) {
-
                     resolve(res);
                 } else if (res.code === 4001) {
                     //重新登录
@@ -28,20 +27,20 @@ export function fetch(options) {
                     });
                     store.dispatch('FedLogOut').then(() => {
                         router.push({path: '/login'});
-                        console.log(111)
                     });
                     reject(res);
+                } else {
+                    reject(res);
                 }
-            })
-            .catch(error => {
-                Message({
-                    message: error,
-                    type: 'error',
-                    duration: 5 * 1000
-                });
-                console.log(error); // for debug
-                reject(error);
+            }).catch(error => {
+            Message({
+                message: error,
+                type: 'error',
+                duration: 5 * 1000
             });
+            console.log(error); // for debug
+            reject(error);
+        });
     });
 }
 
