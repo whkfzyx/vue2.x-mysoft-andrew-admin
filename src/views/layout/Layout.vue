@@ -29,6 +29,9 @@
                 return this.$store.state.app.sidebar;
             }
         },
+        created () {
+            store.dispatch('GetEnumValues');
+        },
         beforeRouteEnter: (to, from, next) => {
             const roles = store.getters.roles;
             if (roles.length !== 0) {
@@ -37,7 +40,6 @@
             }
 
             // loadingInstance = Loading.service({ fullscreen: true, text: '玩命加载中' });
-            store.dispatch('GetEnumValues');
             store.dispatch('GetInfo').then(() => {
                 permission.init({
                     roles: ['admin'],

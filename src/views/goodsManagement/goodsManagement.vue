@@ -65,9 +65,7 @@
                             action=""
                             :multiple="false"
                             :show-file-list="false"
-                            :before-upload="beforeImgUpload"
-                            :on-success="onImgUploadSuccess"
-                            :on-remove="handleImgRemove">
+                            :before-upload="beforeImgUpload">
                         <img v-if="temp.img_url" :src="temp.img_url" class="avatar">
                         <i class="el-icon-plus avatar-uploader-icon" v-else></i>
                         <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过500KB，推荐尺寸750x560px</div>
@@ -209,13 +207,6 @@
                 this.listQuery.page = val;
                 this.getList();
             },
-            handleModifyStatus(row, status) {
-                this.$message({
-                    message: '操作成功',
-                    type: 'success'
-                });
-                row.status = status;
-            },
             handleCreate() {
                 this.resetTemp();
                 this.dialogStatus = 'create';
@@ -331,11 +322,6 @@
                     }
                 }))
             },
-            onImgUploadSuccess(resp, file) {
-                this.temp.img = resp.data.file_path;
-                this.temp.img_url = resp.data.action_path;
-                console.log('upload success ', resp);
-            },
             beforeImgUpload(file) {
                 const isJPG = (file.type === 'image/jpeg');
                 const isLt2M = file.size / 1024 / 1024 <= .5;
@@ -358,9 +344,6 @@
                         this.temp.img_url = resp.data.action_path;
                         return new Promise
                     });
-            },
-            handleImgRemove(file, fileList){
-                return null
             },
         }
     }
