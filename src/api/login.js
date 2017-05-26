@@ -20,8 +20,8 @@ export function getEnum() {
 
 export function logout() {
     return fetch({
-        url: '/login/logout',
-        method: 'post'
+        url: 'logout',
+        method: 'GET'
     });
 }
 

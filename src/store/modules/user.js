@@ -65,7 +65,7 @@ const user = {
         // 登出
         LogOut({commit, state}) {
             return new Promise((resolve, reject) => {
-                logout(state.token).then(() => {
+                logout().then(() => {
                     commit('SET_TOKEN', '');
                     commit('SET_ROLES', []);
                     Cookies.remove('X-Ivanka-Token');

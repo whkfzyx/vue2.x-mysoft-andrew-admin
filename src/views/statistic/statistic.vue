@@ -1,5 +1,6 @@
 <template>
     <div class="app-container calendar-list-container">
+        <!--query form-->
         <div class="filter-container">
             <el-date-picker class="filter-item"
                             v-model="listQuery.dateRange"
@@ -11,14 +12,15 @@
 
             <el-select clearable class="filter-item" v-model="listQuery.department"
                        placeholder="隶属部门">
-                <el-option v-for="item in departmentOptions" :key="item.key" :label="item.display_name"
-                           :value="item.key">
+                <el-option v-for="(item,key) in this.$store.state.user.enumValues.departments" :key="key"
+                           :label="item" :value="key">
                 </el-option>
             </el-select>
 
             <el-select clearable class="filter-item" v-model="listQuery.type"
                        placeholder="物品性质">
-                <el-option v-for="item in typeOptions" :key="item.key" :label="item.display_name" :value="item.key">
+                <el-option v-for="item in this.$store.state.user.enumValues.categores" :key="item.id"
+                           :label="item.name" :value="item.id">
                 </el-option>
             </el-select>
 
@@ -26,28 +28,23 @@
             <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
         </div>
 
+        <!--list table-->
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row
                   style="width: 100%">
-            <el-table-column align="center" label="" style="width:6%;">
+            <el-table-column align="center" label="">
                 <template scope="scope">
-                    <div><img :src="scope.row.img" :alt="scope.row.name" style="width:40px;height:auto;"></div>
+                    <div v-if="scope.row.thumb_img"><img :src="scope.row.thumb_img" :alt="scope.row.name"
+                                                         style="width:40px;height:auto;"></div>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="名称" style="width:10%;" prop="name"></el-table-column>
-            <el-table-column align="center" label="性质" style="width:8%;">
+            <el-table-column align="center" label="物品名称" prop="name"></el-table-column>
+            <el-table-column align="center" label="物品性质" prop="categore_name"></el-table-column>
+            <el-table-column align="center" label="隶属部门">
                 <template scope="scope">
-                    <span>{{scope.row.type | typeFilter}}</span>
+                    <span>{{departmentFilter((scope.row.department).toString())}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="隶属部门" style="width:8%;">
-                <template scope="scope">
-                    <span>{{scope.row.department | departmentFilter}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="领用数量 or 次数" style="width:8%;">
-                <template scope="scope">
-                    <span>{{scope.row.count}}</span>
-                </template>
+            <el-table-column align="center" label="领用数量 or 次数" prop="num_taken">
             </el-table-column>
         </el-table>
 
@@ -63,36 +60,23 @@
 </template>
 
 <script>
-    import {fetchStatistics} from 'api/statistics';
+    import {fetchStatistics, fetchStatisticsExcelData} from 'api/statistics';
     import {parseTime, objectMerge} from 'utils';
 
-    const typeOptions = [
-        {key: 'lowValue', display_name: '低值易耗'},
-        {key: 'fixedAsset', display_name: '固定资产'},
-        {key: 'loveHouse', display_name: '爱心屋'},
-    ];
-    const departmentOptions = [
-        {key: 'administration', display_name: '行政'},
-        {key: 'it', display_name: 'IT'},
-        {key: 'finance', display_name: '财务'},
-    ];
-
     export default {
-        name: 'table_demo',
+        name: 'statistics',
         data() {
             return {
-                list: null,
+                list: [],
                 total: null,
                 listLoading: true,
                 listQuery: {
                     page: 1,
                     pageSize: 20,
-                    department: undefined,
-                    type: undefined,
-                    dateRange: undefined,
+                    department: '',
+                    type: '',
+                    dateRange: ['', ''],
                 },
-                typeOptions,
-                departmentOptions,
                 tableKey: 0,
                 pickerOptions: {
                     shortcuts: [{
@@ -126,20 +110,21 @@
         created() {
             this.getList();
         },
-        filters: {
-            typeFilter(key) {
-                return typeOptions.find(item => item.key === key).display_name
-            },
-            departmentFilter(key) {
-                return departmentOptions.find(item => item.key === key).display_name
-            },
-        },
+        filters: {},
         methods: {
+            departmentFilter(key) {
+                return this.$store.state.user.enumValues.departments[key]
+            },
             getList() {
                 this.listLoading = true;
-                fetchStatistics(this.listQuery).then(response => {
+                fetchStatistics({
+                    ...this.listQuery, dateRange: [
+                        this.listQuery.dateRange[0] ? (new Date(this.listQuery.dateRange[0])).valueOf().toString().slice(0, 10) : '',
+                        this.listQuery.dateRange[1] ? (new Date(this.listQuery.dateRange[1])).valueOf().toString().slice(0, 10) : '',
+                    ]
+                }).then(response => {
                     this.list = response.data.list;
-                    this.total = response.data.total;
+                    this.total = parseInt(response.data.count);
                     this.listLoading = false;
                 })
             },
@@ -154,49 +139,17 @@
                 this.listQuery.page = val;
                 this.getList();
             },
-            timeFilter(time) {
-                if (!time[0]) {
-                    this.listQuery.start = undefined;
-                    this.listQuery.end = undefined;
-                    return;
-                }
-                this.listQuery.start = parseInt(+time[0] / 1000);
-                this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000);
-            },
-            create() {
-                this.temp.id = parseInt(Math.random() * 100) + 1024;
-                this.temp.timestamp = +new Date();
-                this.temp.author = '原创作者';
-                this.list.unshift(this.temp);
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '创建成功',
-                    type: 'success',
-                    duration: 2000
-                });
-            },
-            update() {
-                this.temp.timestamp = +this.temp.timestamp;
-                for (const v of this.list) {
-                    if (v.id === this.temp.id) {
-                        objectMerge(v, this.temp);
-                        break;
-                    }
-                }
-                this.dialogFormVisible = false;
-                this.$notify({
-                    title: '成功',
-                    message: '更新成功',
-                    type: 'success',
-                    duration: 2000
-                });
-            },
             handleDownload() {
+                fetchStatistics().then(response => {
+                    this.list = response.data.list;
+                    this.total = parseInt(response.data.count);
+                    this.listLoading = false;
+                });
+
                 require.ensure([], () => {
                     const {export_json_to_excel} = require('vendor/Export2Excel');
-                    const tHeader = ['时间', '地区', '类型', '标题', '重要性'];
-                    const filterVal = ['timestamp', 'province', 'type', 'title', 'importance'];
+                    const tHeader = ['物品名称', '物品性质', '隶属部门', '领用数量 or 次数'];
+                    const filterVal = ['name', 'categore_name', 'type', 'title'];
                     const data = this.formatJson(filterVal, this.list);
                     export_json_to_excel(tHeader, data, 'table数据');
                 })

@@ -11,8 +11,8 @@
                   border fit highlight-current-row style="width: 100%">
             <el-table-column align="center" label="">
                 <template scope="scope">
-                    <div v-if="scope.row.img_url">
-                        <img :src="scope.row.img_url" :alt="scope.row.name" style="width:40px;height:auto;">
+                    <div v-if="scope.row.thumb_img">
+                        <img :src="scope.row.thumb_img" :alt="scope.row.name" style="width:40px;height:auto;">
                     </div>
                 </template>
             </el-table-column>
@@ -56,7 +56,7 @@
                      label-position="right" label-width="100px"
                      style='width: 85%;margin:0 auto;'>
                 <el-form-item label="物品名称" prop="name">
-                    <el-input v-model="temp.name"></el-input>
+                    <el-input v-model="temp.name" :maxlength="255"></el-input>
                 </el-form-item>
 
                 <el-form-item label="上传图片" prop="img">
@@ -114,7 +114,7 @@
 
                     <el-col :span="10">
                         <el-form-item label="库存" prop="stock">
-                            <el-input-number v-model.number="temp.stock" :min="0" :max="255"></el-input-number>
+                            <el-input-number v-model.number="temp.stock" :min="0" :max="65535"></el-input-number>
                         </el-form-item>
                     </el-col>
                 </el-row>
