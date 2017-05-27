@@ -25,7 +25,7 @@
             </el-select>
 
             <el-button class="filter-item" type="primary" icon="search" @click="handleFilter">查询</el-button>
-            <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
+            <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出当前数据</el-button>
         </div>
 
         <!--list table-->
@@ -62,6 +62,7 @@
 <script>
     import {fetchStatistics, fetchStatisticsExcelData} from 'api/statistics';
     import {parseTime, objectMerge} from 'utils';
+    import moment from 'moment'
 
     export default {
         name: 'statistics',
@@ -76,6 +77,7 @@
                     department: '',
                     type: '',
                     dateRange: ['', ''],
+                    report: 0,
                 },
                 tableKey: 0,
                 pickerOptions: {
@@ -108,9 +110,14 @@
             }
         },
         created() {
+            // init date range
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            this.listQuery.dateRange = [start, end];
+
             this.getList();
         },
-        filters: {},
         methods: {
             departmentFilter(key) {
                 return this.$store.state.user.enumValues.departments[key]
@@ -123,8 +130,8 @@
                         this.listQuery.dateRange[1] ? (new Date(this.listQuery.dateRange[1])).valueOf().toString().slice(0, 10) : '',
                     ]
                 }).then(response => {
-                    this.list = response.data.list;
-                    this.total = parseInt(response.data.count);
+                    this.list = response.data.list ? response.data.list : [];
+                    this.total = response.data.count ? parseInt(response.data.count) : 0;
                     this.listLoading = false;
                 })
             },
@@ -140,24 +147,49 @@
                 this.getList();
             },
             handleDownload() {
-                fetchStatistics().then(response => {
-                    this.list = response.data.list;
-                    this.total = parseInt(response.data.count);
-                    this.listLoading = false;
-                });
-
                 require.ensure([], () => {
                     const {export_json_to_excel} = require('vendor/Export2Excel');
                     const tHeader = ['物品名称', '物品性质', '隶属部门', '领用数量 or 次数'];
-                    const filterVal = ['name', 'categore_name', 'type', 'title'];
-                    const data = this.formatJson(filterVal, this.list);
-                    export_json_to_excel(tHeader, data, 'table数据');
+                    const filterVal = ['name', 'categore_name', 'department', 'num_taken'];
+                    this.$message({
+                        type: 'info',
+                        message: '正在准备数据，稍后Excel文件将开始下载（超过1000条，请缩小时间范围分批导出）',
+                        duration: 5000
+                    });
+
+                    fetchStatistics({
+                        ...this.listQuery,
+                        dateRange: [
+                            this.listQuery.dateRange[0] ? (new Date(this.listQuery.dateRange[0])).valueOf().toString().slice(0, 10) : '',
+                            this.listQuery.dateRange[1] ? (new Date(this.listQuery.dateRange[1])).valueOf().toString().slice(0, 10) : '',
+                        ],
+                        page: 1,
+                        pageSize: 1000,
+                        report: 1,
+                    }).then(resp => {
+                        if (resp.data.list && resp.data.list.length) {
+                            const data = this.formatJson(filterVal, resp.data.list);
+                            export_json_to_excel(tHeader, data,
+                                (
+                                    (this.listQuery.dateRange[0] ? moment(this.listQuery.dateRange[0]).format('YYYYMMDD') : '')
+                                    + '-'
+                                    + (this.listQuery.dateRange[1] ? moment(this.listQuery.dateRange[1]).format('YYYYMMDD') : '')
+                                    + '明源小管家-物品领用-统计数据'
+                                )
+                            );
+                        } else {
+                            this.$message({
+                                type: 'info',
+                                message: '没有数据供导出'
+                            });
+                        }
+                    });
                 })
             },
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => {
-                    if (j === 'timestamp') {
-                        return parseTime(v[j])
+                    if (j === 'department') {
+                        return this.departmentFilter(v[j])
                     } else {
                         return v[j]
                     }

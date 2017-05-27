@@ -19,8 +19,7 @@
                     登录
                 </el-button>
             </el-form-item>
-            <div class='tips'>admin账号为:admin@mingyuanyun.com 密码随便填</div>
-            <div class='tips'>editor账号:editor@mingyuanyun.com 密码随便填</div>
+            <div class='tips'>admin账号为:admin@mingyuanyun.com 密码:123456</div>
             <div class='tips'>若忘记密码，请其他管理员登录后帮你重置</div>
         </el-form>
     </div>
