@@ -89,8 +89,16 @@
                 }
             };
             const validatePass = (rule, value, callback) => {
-                if (value.length < 6) {
+                if (this.dialogStatus === 'create' && value.length < 6) {
                     callback(new Error('密码不能小于6位'));
+                } else if (this.dialogStatus === 'update') {
+                    if (!value.length) {
+                        callback();
+                    } else if (value.length > 0 && value.length < 6) {
+                        callback(new Error('密码不能小于6位'));
+                    } else {
+                        callback();
+                    }
                 } else {
                     callback();
                 }
@@ -127,8 +135,12 @@
                 rules: {
                     username: [{required: true, trigger: 'blur', validator: validateEmail}],
                     department: [{required: true, message: '请选择管理部门', trigger: 'change'}],
-                    password: [{required: true, trigger: 'blur', validator: validatePass}],
-                    passwordRepeat: [{required: true, trigger: 'blur', validator: validatePasswordRepeat}],
+                    password: [{required: this.dialogStatus === 'create', trigger: 'blur', validator: validatePass}],
+                    passwordRepeat: [{
+                        required: this.dialogStatus === 'create',
+                        trigger: 'blur',
+                        validator: validatePasswordRepeat
+                    }],
                 },
             }
         },
