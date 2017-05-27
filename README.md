@@ -28,6 +28,8 @@ npm源速度慢时，安装推荐步骤：
 
 ## Publish
 ```bash
+
+    # 按注释修改 config/index.js 11、12行
     # 构建生产环境
     npm run build:prod
 
