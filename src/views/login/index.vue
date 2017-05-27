@@ -49,7 +49,7 @@
             };
             return {
                 loginForm: {
-                    email: 'admin',
+                    email: '@mingyuanyun.com',
                     password: ''
                 },
                 loginRules: {
