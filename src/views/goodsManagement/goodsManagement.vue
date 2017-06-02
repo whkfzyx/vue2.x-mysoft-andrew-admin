@@ -235,6 +235,12 @@
                             type: 'success',
                             duration: 2000
                         });
+                    }, err => {
+                        this.$notify({
+                            message: err.message,
+                            type: 'error',
+                            duration: 2000
+                        });
                     });
                 }).catch(() => {
                     this.$message({
@@ -261,6 +267,12 @@
                                 type: 'success',
                                 duration: 2000
                             });
+                        }, err => {
+                            this.$notify({
+                                message: err.message,
+                                type: 'error',
+                                duration: 2000
+                            });
                         });
                     } else {
                         console.log('error submit!!');
@@ -282,6 +294,12 @@
                         title: '成功',
                         message: '修改成功',
                         type: 'success',
+                        duration: 2000
+                    });
+                }, err => {
+                    this.$notify({
+                        message: err.message,
+                        type: 'error',
                         duration: 2000
                     });
                 });
@@ -307,24 +325,6 @@
                     need_return: 0,
                 };
             },
-            handleDownload() {
-                require.ensure([], () => {
-                    const {export_json_to_excel} = require('vendor/Export2Excel');
-                    const tHeader = ['时间', '地区', '类型', '标题', '重要性'];
-                    const filterVal = ['timestamp', 'province', 'type', 'title', 'importance'];
-                    const data = this.formatJson(filterVal, this.list);
-                    export_json_to_excel(tHeader, data, 'table数据');
-                })
-            },
-            formatJson(filterVal, jsonData) {
-                return jsonData.map(v => filterVal.map(j => {
-                    if (j === 'timestamp') {
-                        return parseTime(v[j])
-                    } else {
-                        return v[j]
-                    }
-                }))
-            },
             beforeImgUpload(file) {
                 const isJPG = (file.type === 'image/jpeg');
                 const isLt2M = file.size / 1024 / 1024 <= .5;
@@ -346,6 +346,12 @@
                         this.temp.img = resp.data.file_path;
                         this.temp.img_url = resp.data.action_path;
                         return new Promise
+                    }, err => {
+                        this.$notify({
+                            message: err.message,
+                            type: 'error',
+                            duration: 2000
+                        });
                     });
             },
         }
