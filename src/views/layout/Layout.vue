@@ -34,11 +34,11 @@
                 store.dispatch('GetEnumValues');
             }
 
-            const roles = store.getters.roles;
-            if (roles.length !== 0) {
-                next();
-                return
-            }
+            /*const roles = store.getters.roles;
+             if (roles.length !== 0) {
+             next();
+             return
+             }*/
 
             // loadingInstance = Loading.service({ fullscreen: true, text: '玩命加载中' });
             store.dispatch('GetInfo').then(() => {

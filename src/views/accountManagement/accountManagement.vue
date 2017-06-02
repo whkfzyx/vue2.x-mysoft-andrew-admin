@@ -219,6 +219,12 @@
                                 type: 'success',
                                 duration: 2000
                             });
+                        }, err => {
+                            this.$notify({
+                                message: err.message,
+                                type: 'warning',
+                                duration: 2000
+                            });
                         });
                     } else {
                         console.log('error submit!!');
