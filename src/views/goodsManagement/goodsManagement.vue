@@ -241,13 +241,13 @@
                             title: '成功',
                             message: '删除成功',
                             type: 'success',
-                            duration: 800
+                            duration: 1500
                         });
                     }, err => {
                         this.$notify({
                             message: err.message,
                             type: 'error',
-                            duration: 800
+                            duration: 1500
                         });
                     });
                 }).catch(() => {
@@ -273,13 +273,13 @@
                                 title: '成功',
                                 message: '添加成功',
                                 type: 'success',
-                                duration: 800
+                                duration: 1500
                             });
                         }, err => {
                             this.$notify({
                                 message: err.message,
                                 type: 'error',
-                                duration: 800
+                                duration: 1500
                             });
                         });
                     } else {
@@ -302,13 +302,13 @@
                         title: '成功',
                         message: '修改成功',
                         type: 'success',
-                        duration: 800
+                        duration: 1500
                     });
                 }, err => {
                     this.$notify({
                         message: err.message,
                         type: 'error',
-                        duration: 800
+                        duration: 1500
                     });
                 });
                 this.dialogFormVisible = false;
