@@ -39,7 +39,7 @@
         </div>
 
         <!--insert and update modal-->
-        <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible" :before-close="onBeforeClose">
+        <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" label-position="right" label-width="100px"
                      style='width: 400px; margin-left:50px;' :rules="rules" ref="insertAccountForm">
                 <el-form-item label="隶属部门" prop="department">
@@ -168,10 +168,12 @@
                 this.getList();
             },
             handleCreate() {
+                this.resetTemp();
                 this.dialogStatus = 'create';
                 this.dialogFormVisible = true;
             },
             handleUpdate(row) {
+                this.resetTemp();
                 objectMerge(this.temp,
                     {username: row.username, department: row.department.toString(), id: row.id}
                 );
@@ -255,10 +257,6 @@
                         return false;
                     }
                 });
-            },
-            onBeforeClose(done){
-                this.resetTemp();
-                done();
             },
             resetTemp() {
                 this.$refs['insertAccountForm'] && this.$refs['insertAccountForm'].resetFields();

@@ -51,7 +51,7 @@
         </div>
 
         <!--modal - insert-->
-        <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible" :before-close="onBeforeClose">
+        <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
             <el-form class="small-space" :model="temp" :rules="rules" ref="goodsDetailForm"
                      label-position="right" label-width="100px"
                      style='width: 85%;margin:0 auto;'>
@@ -208,10 +208,12 @@
                 this.getList();
             },
             handleCreate() {
+                this.resetTemp();
                 this.dialogStatus = 'create';
                 this.dialogFormVisible = true;
             },
             handleUpdate(row) {
+                this.resetTemp();
                 objectMerge(this.temp, {
                     ...row,
                     department: (row.department).toString(),
@@ -304,10 +306,6 @@
                     });
                 });
                 this.dialogFormVisible = false;
-            },
-            onBeforeClose(done){
-                this.resetTemp();
-                done();
             },
             resetTemp() {
                 this.$refs['goodsDetailForm'] && this.$refs['goodsDetailForm'].resetFields();
