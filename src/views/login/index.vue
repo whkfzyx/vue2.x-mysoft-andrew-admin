@@ -7,7 +7,7 @@
             <el-form-item prop="email">
                 <span class="svg-container"><wscn-icon-svg icon-class="jiedianyoujian"/></span>
                 <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on"
-                          placeholder="公司邮箱"></el-input>
+                          placeholder="@mingyuanyun.com"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <span class="svg-container"><wscn-icon-svg icon-class="mima"/></span>
@@ -49,7 +49,7 @@
             };
             return {
                 loginForm: {
-                    email: '@mingyuanyun.com',
+                    email: '',
                     password: ''
                 },
                 loginRules: {

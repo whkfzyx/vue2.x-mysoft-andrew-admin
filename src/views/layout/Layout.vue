@@ -27,17 +27,18 @@
         computed: {
             sidebar() {
                 return this.$store.state.app.sidebar;
-            }
-        },
-        created () {
-            store.dispatch('GetEnumValues');
+            },
         },
         beforeRouteEnter: (to, from, next) => {
-            /*const roles = store.getters.roles;
-             if (roles.length !== 0) {
-             next();
-             return
-             }*/
+            if (!store.getters.enumValues.categores) {
+                store.dispatch('GetEnumValues');
+            }
+
+            const roles = store.getters.roles;
+            if (roles.length !== 0) {
+                next();
+                return
+            }
 
             // loadingInstance = Loading.service({ fullscreen: true, text: '玩命加载中' });
             store.dispatch('GetInfo').then(() => {

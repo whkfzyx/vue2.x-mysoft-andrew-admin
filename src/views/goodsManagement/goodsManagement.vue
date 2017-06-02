@@ -82,8 +82,8 @@
 
                 <el-form-item label="物品性质" prop="categore">
                     <el-radio-group v-model="temp.categore">
-                        <el-radio v-for="(item,key) in this.$store.state.user.enumValues.categores" :key="item.id"
-                                  :label="item.id" :value="key">
+                        <el-radio v-for="(item,key) in this.$store.state.user.enumValues.categores" :key="key"
+                                  :label="key">
                             {{item.name}}
                         </el-radio>
                     </el-radio-group>

@@ -147,7 +147,6 @@
         created() {
             this.getList();
         },
-        filters: {},
         methods: {
             departmentFilter(key) {
                 return this.$store.state.user.enumValues.departments[key]
@@ -175,7 +174,9 @@
             },
             handleUpdate(row) {
                 this.resetTemp();
-                objectMerge(this.temp, {username: row.username, department: row.department, id: row.id});
+                objectMerge(this.temp,
+                    {username: row.username, department: row.department.toString(), id: row.id}
+                );
                 this.dialogStatus = 'update';
                 this.dialogFormVisible = true;
             },
