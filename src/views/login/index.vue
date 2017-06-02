@@ -81,6 +81,7 @@
                             this.loading = false;
                         });
                     } else {
+                        this.loading = false;
                         console.log('error submit!!');
                         return false;
                     }
