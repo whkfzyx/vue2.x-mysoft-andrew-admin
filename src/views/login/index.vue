@@ -54,7 +54,7 @@
                 },
                 loginRules: {
                     email: [
-                        //{required: true, trigger: 'blur', validator: validateEmail}
+                        {required: true, trigger: 'blur', validator: validateEmail}
                     ],
                     password: [
                         {required: true, trigger: 'blur', validator: validatePass}
@@ -72,7 +72,7 @@
             handleLogin() {
                 this.$refs.loginForm.validate(valid => {
                     if (valid) {
-                        this.loading = true;
+//                        this.loading = true;
                         this.$store.dispatch('LoginByEmail', this.loginForm).then(() => {
                             this.loading = false;
                             this.$router.push({path: '/'});
@@ -81,7 +81,6 @@
                             this.loading = false;
                         });
                     } else {
-                        this.loading = false;
                         console.log('error submit!!');
                         return false;
                     }

@@ -26,7 +26,10 @@
                   style="width: 100%">
             <el-table-column align="center" label="应还日期">
                 <template scope="scope">
-                    <span>{{scope.row.return_time === '0' ? '长期' : (new Date((parseInt(scope.row.return_time) * 1000)) | parseTime('{y}-{m}-{d}'))}}</span>
+                    <span v-if="scope.row.return_time === '0'">长期</span>
+                    <span v-else>
+                        {{new Date((parseInt(scope.row.return_time) * 1000)) | parseTime('{y}-{m}-{d}')}}
+                    </span>
                 </template>
             </el-table-column>
 

@@ -33,11 +33,6 @@ export function fetch(options) {
                     reject(res);
                 }
             }).catch(error => {
-            Notification({
-                message: error,
-                type: 'error',
-                duration: 5 * 1000
-            });
             console.log(error); // for debug
             reject(error);
         });
