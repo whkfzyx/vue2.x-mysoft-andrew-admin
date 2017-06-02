@@ -87,7 +87,7 @@ const user = {
 
         //get enums
         GetEnumValues({commit}) {
-            return new Promise((resolve,reject) => {
+            return new Promise((resolve, reject) => {
                 getEnum().then(response => {
                     const data = response.data;
                     commit('SET_ENUMS', data);

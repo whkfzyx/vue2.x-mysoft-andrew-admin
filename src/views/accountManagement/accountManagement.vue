@@ -181,13 +181,24 @@
                 this.dialogFormVisible = true;
             },
             handleDelete(row) {
-                removeAccount({id: row.id}).then(resp => {
-                    this.getList();
-                    this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success',
-                        duration: 2000
+                this.$confirm('确认删除该帐户?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    removeAccount({id: row.id}).then(resp => {
+                        this.getList();
+                        this.$notify({
+                            title: '成功',
+                            message: '删除成功',
+                            type: 'success',
+                            duration: 2000
+                        });
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
                     });
                 });
             },
