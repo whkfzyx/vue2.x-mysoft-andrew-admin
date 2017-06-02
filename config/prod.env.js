@@ -1,5 +1,5 @@
 module.exports = {
     NODE_ENV: '"production"',
-    BASE_API: '"http://119.23.216.222/andrew/admin-api/"',
+    BASE_API: '"http://andrew.tunnel.qydev.com/andrew/admin-api/"',
     APP_ORIGIN: '"https://wallstreetcn.com"'
 };
