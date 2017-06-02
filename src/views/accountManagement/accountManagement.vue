@@ -44,7 +44,7 @@
                      style='width: 400px; margin-left:50px;' :rules="rules" ref="insertAccountForm">
                 <el-form-item label="隶属部门" prop="department">
                     <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
-                        <el-option v-for="(item,key) in this.$store.state.user.enumValues.departments" :key="key"
+                        <el-option v-for="(item,key) in enumValues.departments" :key="key"
                                    :label="item" :value="key">
                         </el-option>
                     </el-select>
@@ -77,6 +77,7 @@
     import {getAccountList, createAccount, updateAccount, removeAccount} from 'api/accountManagement';
     import {parseTime, objectMerge} from 'utils';
     import {isMingyuanEmail} from 'utils/validate';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: 'accountManagement',
@@ -143,6 +144,11 @@
                     }],
                 },
             }
+        },
+        computed: {
+            ...mapGetters([
+                'enumValues',
+            ]),
         },
         created() {
             this.getList();

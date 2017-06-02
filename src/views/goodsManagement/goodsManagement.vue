@@ -25,7 +25,7 @@
             </el-table-column>
             <el-table-column align="center" label="领用频率 or 时长" prop="department">
                 <template scope="scope">
-                    <span>{{scope.row.need_return ? (scope.row.duration === '0' ? '长期' : (parseInt(scope.row.duration) / 86400).toFixed(1) + ' 天') : scope.row.frequency + ' /人·月'}}</span>
+                    <span>{{scope.row.need_return ? (scope.row.duration == 0 ? '长期' : (parseInt(scope.row.duration) / 86400).toFixed(1) + ' 天') : scope.row.frequency + ' /人·月'}}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="库存" prop="stock"></el-table-column>
@@ -74,7 +74,7 @@
 
                 <el-form-item label="隶属部门" prop="department">
                     <el-select class="filter-item" v-model="temp.department" placeholder="请选择">
-                        <el-option v-for="(item,key) in this.$store.state.user.enumValues.departments" :key="key"
+                        <el-option v-for="(item,key) in enumValues.departments" :key="key"
                                    :label="item" :value="key">
                         </el-option>
                     </el-select>
@@ -82,7 +82,7 @@
 
                 <el-form-item label="物品性质" prop="categore">
                     <el-radio-group v-model="temp.categore">
-                        <el-radio v-for="(item,key) in this.$store.state.user.enumValues.categores" :key="key"
+                        <el-radio v-for="(item,key) in enumValues.categores" :key="key"
                                   :label="key">
                             {{item.name}}
                         </el-radio>
@@ -141,6 +141,7 @@
     import {fetchList, addGoods, uploadImg, editgoods, removeGoods} from 'api/goodsManagement';
     import {parseTime, objectMerge} from 'utils';
     import store from 'store';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: 'goodsManagement',
@@ -183,6 +184,11 @@
                 },
                 tableKey: 0
             }
+        },
+        computed: {
+            ...mapGetters([
+                'enumValues',
+            ]),
         },
         created() {
             this.getList();
@@ -235,13 +241,13 @@
                             title: '成功',
                             message: '删除成功',
                             type: 'success',
-                            duration: 2000
+                            duration: 800
                         });
                     }, err => {
                         this.$notify({
                             message: err.message,
                             type: 'error',
-                            duration: 2000
+                            duration: 800
                         });
                     });
                 }).catch(() => {
@@ -267,13 +273,13 @@
                                 title: '成功',
                                 message: '添加成功',
                                 type: 'success',
-                                duration: 2000
+                                duration: 800
                             });
                         }, err => {
                             this.$notify({
                                 message: err.message,
                                 type: 'error',
-                                duration: 2000
+                                duration: 800
                             });
                         });
                     } else {
@@ -296,13 +302,13 @@
                         title: '成功',
                         message: '修改成功',
                         type: 'success',
-                        duration: 2000
+                        duration: 800
                     });
                 }, err => {
                     this.$notify({
                         message: err.message,
                         type: 'error',
-                        duration: 2000
+                        duration: 800
                     });
                 });
                 this.dialogFormVisible = false;
@@ -348,7 +354,7 @@
                         this.$notify({
                             message: err.message,
                             type: 'error',
-                            duration: 2000
+                            duration: 1500
                         });
                     });
             },
