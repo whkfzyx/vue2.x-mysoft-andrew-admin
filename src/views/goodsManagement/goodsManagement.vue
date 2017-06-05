@@ -68,7 +68,7 @@
                             :before-upload="beforeImgUpload">
                         <img v-if="temp.img_url" :src="temp.img_url" class="avatar">
                         <i class="el-icon-plus avatar-uploader-icon" v-else></i>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过500KB，推荐尺寸750x560px</div>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg、png文件，且不超过500KB，推荐尺寸750x560px</div>
                     </el-upload>
                 </el-form-item>
 
@@ -330,11 +330,11 @@
                 };
             },
             beforeImgUpload(file) {
-                const isJPG = (file.type === 'image/jpeg');
+                const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png');
                 const isLt2M = file.size / 1024 / 1024 <= .5;
 
                 if (!isJPG) {
-                    this.$message.error('上传图片只能是 JPG 格式!');
+                    this.$message.error('上传图片只能是 JPG/PNG 格式!');
                     return false
                 }
                 if (!isLt2M) {
