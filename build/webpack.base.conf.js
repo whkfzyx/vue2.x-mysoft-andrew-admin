@@ -10,12 +10,12 @@ var src = path.resolve(__dirname, '../src');
 
 module.exports = {
     entry: {
-        app: './src/main.js'
+        app: ['babel-polyfill', './src/main.js']
     },
     output: {
         path: config.build.assetsRoot,
         filename: '[name].js',
-        publicPath: process.env.NODE_ENV !== 'development' ?  config.build.assetsPublicPath: config.dev.assetsPublicPath
+        publicPath: process.env.NODE_ENV !== 'development' ? config.build.assetsPublicPath : config.dev.assetsPublicPath
     },
     resolve: {
         extensions: ['.js', '.vue', '.json'],
@@ -50,7 +50,8 @@ module.exports = {
             //         formatter: require('eslint-friendly-formatter')
             //     }
             // },
-            { test: /\.vue$/,
+            {
+                test: /\.vue$/,
                 loader: 'vue-loader',
                 options: vueLoaderConfig
             },
