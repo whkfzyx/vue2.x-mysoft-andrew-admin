@@ -13,7 +13,7 @@
                         首页
                     </el-dropdown-item>
                 </router-link>
-                <!--<router-link class='inlineBlock' to="/admin/changePassword">-->
+                <!--<router-link class='inlineBlock' to="/changePassword">-->
                     <!--<el-dropdown-item>-->
                         <!--修改密码-->
                     <!--</el-dropdown-item>-->
@@ -25,31 +25,31 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
+    import { mapGetters } from 'vuex'
     import Levelbar from './Levelbar';
     import Hamburger from 'components/Hamburger';
 
     export default {
-        components: {
-            Levelbar,
-            Hamburger,
+      components: {
+          Levelbar,
+          Hamburger
         },
-        data() {
-            return {}
+      data() {
+          return {}
         },
-        computed: {
-            ...mapGetters([
-                'sidebar',
-                'email',
+      computed: {
+          ...mapGetters([
+              'sidebar',
+              'email'
             ])
         },
-        methods: {
-            toggleSideBar() {
-                this.$store.dispatch('ToggleSideBar')
+      methods: {
+          toggleSideBar() {
+              this.$store.dispatch('ToggleSideBar')
             },
-            logout() {
-                this.$store.dispatch('LogOut').then(() => {
-                    this.$router.push({path: '/login'})
+          logout() {
+              this.$store.dispatch('LogOut').then(() => {
+                  this.$router.push({ path: '/login' })
                 });
             }
         }

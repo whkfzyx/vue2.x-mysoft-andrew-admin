@@ -25,7 +25,7 @@
     export default {
       data() {
         return {
-          errGif: errGif + '?' + +new Date(),
+          errGif: errGif + '?' + +new Date()
         }
       },
       methods: {

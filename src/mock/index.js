@@ -10,14 +10,14 @@ const mock = new MockAdapter(axios);
 // 物品管理
 mock.onGet('/getGoodsList').reply(goodsManagement.getList);
 
-//归还管理
+// 归还管理
 mock.onGet('/getShouldReturnList').reply(returnManagement.getShouldReturnList);
 mock.onGet('/returnFixedAsset').reply(returnManagement.returnFixedAsset);
 
-//统计
+// 统计
 mock.onGet('/fetchStatistics').reply(statistics.fetchStatistics);
 
-//管理员帐户管理
+// 管理员帐户管理
 mock.onGet('/getAccountList').reply(accountManagement.getAccountList);
 
 

@@ -21,47 +21,47 @@ Vue.use(ElementUI);
 
 // register global utility filters.
 Object.keys(filters).forEach(key => {
-    Vue.filter(key, filters[key])
+  Vue.filter(key, filters[key])
 });
 
 function hasPermission(roles, permissionRoles) {
-    if (roles.indexOf('admin') >= 0) return true;
-    return roles.some(role => permissionRoles.indexOf(role) >= 0)
+  if (roles.indexOf('admin') >= 0) return true;
+  return roles.some(role => permissionRoles.indexOf(role) >= 0)
 }
 // register global progress.
 const whiteList = ['/login', '/authredirect'];// 不重定向白名单
 router.beforeEach((to, from, next) => {
-    NProgress.start();
-    if (store.getters.token) {
-        if (to.path === '/login') {
-            next({path: '/'});
-        } else {
-            if (to.meta && to.meta.role) {
-                if (hasPermission(store.getters.roles, to.meta.role)) {
-                    next();
-                } else {
-                    next('/401');
-                }
-            } else {
-                next();
-            }
-        }
+  NProgress.start();
+  if (store.getters.token) {
+    if (to.path === '/login') {
+      next({ path: '/' });
     } else {
-        if (whiteList.indexOf(to.path) !== -1) {
-            next()
+      if (to.meta && to.meta.role) {
+        if (hasPermission(store.getters.roles, to.meta.role)) {
+          next();
         } else {
-            next('/login')
+          next('/401');
         }
+      } else {
+        next();
+      }
     }
+  } else {
+    if (whiteList.indexOf(to.path) !== -1) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
 });
 
 router.afterEach(() => {
-    NProgress.done();
+  NProgress.done();
 });
 
 
 new Vue({
-    router,
-    store,
-    render: h => h(App)
+  router,
+  store,
+  render: h => h(App)
 }).$mount('#app');

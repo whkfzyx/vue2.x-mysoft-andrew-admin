@@ -4,7 +4,7 @@ const app = {
   state: {
     sidebar: {
       opened: !+Cookies.get('sidebarStatus')
-    },
+    }
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
@@ -14,12 +14,12 @@ const app = {
         Cookies.set('sidebarStatus', 0);
       }
       state.sidebar.opened = !state.sidebar.opened;
-    },
+    }
   },
   actions: {
     ToggleSideBar: ({ commit }) => {
       commit('TOGGLE_SIDEBAR')
-    },
+    }
   }
 };
 
